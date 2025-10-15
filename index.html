@@ -182,17 +182,20 @@
 <body>
   <h1>downloads</h1>
   <p>dont worry its not a virus</p>
-  <p>also by downloading you agree to the terms of service</p>
-  <p>some people may ask: why bother to download?</p>
-  <p>downloading prevents the game from being seen by securly classroom, and the teacher will see the same thing as if you were not on your chromebook</p>
+  <p>by downloading you agree to the terms of service</p>
+  <p>pro tip: downloading lets you bypass Securly classroom 👀</p>
   <p>use wisely!</p>
-  <a href="https://forms.gle/UzH7pZW91GNKVX8U8">click here to suggest games(i will only add games if its suggested)</a>
+  <a href="https://forms.gle/UzH7pZW91GNKVX8U8">suggest games here</a>
+
   <div class="search-container">
     <input type="text" id="search" placeholder="search files" />
   </div>
 
   <div class="file-list" id="fileList">
-    <div class="file-card"><div class="file-name">retro bowl</div><button data-link="https://raw.githubusercontent.com/ethanytangcodes/download/refs/heads/main/files/retrobowl.html">Download</button></div>
+    <div class="file-card">
+      <div class="file-name">retro bowl</div>
+      <button data-link="https://raw.githubusercontent.com/ethanytangcodes/download/refs/heads/main/files/retrobowl.html">Download</button>
+    </div>
   </div>
 
   <p id="noResults" class="no-results" style="display:none;">No matching files found</p>
@@ -200,14 +203,26 @@
   <footer>Built by Ethan Tang</footer>
 
   <script>
-    // Download behavior
+    // Force download behavior
     document.querySelectorAll("button").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const link = btn.dataset.link;
-        const a = document.createElement("a");
-        a.href = link;
-        a.download = "";
-        a.click();
+      btn.addEventListener("click", async () => {
+        const fileUrl = btn.dataset.link;
+        const fileName = fileUrl.split("/").pop();
+
+        try {
+          const response = await fetch(fileUrl);
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = fileName;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+        } catch (err) {
+          alert("❌ Failed to download file: " + err.message);
+        }
       });
     });
 
