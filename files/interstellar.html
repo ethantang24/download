@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Password Protected Page</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+    * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+    }
+    .container {
+      background: rgba(255,255,255,0.08);
+      padding: 2rem 3rem;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      text-align: center;
+      backdrop-filter: blur(6px);
+      width: 360px;
+      max-width: calc(100% - 32px);
+    }
+    input[type="password"] {
+      padding: 0.75rem 1rem;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+      font-size: 1rem;
+      margin-top: 10px;
+      width: 100%;
+    }
+    button {
+      margin-top: 15px;
+      padding: 0.7rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      background-color: #fff;
+      color: #222;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.18s ease;
+    }
+    button:hover { transform: translateY(-2px); }
+    p.small { font-size: 0.85rem; margin-top: 10px; color: #ffdede; }
+    .home-hint { margin-top: 8px; font-size: 0.85rem; color: rgba(255,255,255,0.8); }
+    iframe { width: 100%; height: 100vh; border: none; display: block; }
+  </style>
+</head>
+<body>
+  <div class="container" id="loginBox">
+    <h2>Enter Password</h2>
+    <input type="password" id="passwordInput" placeholder="Password" autocomplete="off" />
+    <button id="unlockBtn">Unlock</button>
+    <p id="errorMsg" class="small"></p>
+    <p class="home-hint">Tip: this uses SHA-256 on the client. For real security, use server-side auth.</p>
+  </div>
+
+  <script>
+    // --- PRECOMPUTED SHA-256 HASH ---
+    const storedHashHex = "66c027fc27c0e5f65de00005cd94c3e5ceec1000e7cc4f2ef6927c838d47b62c";
+
+    // --- helper: convert ArrayBuffer to hex string ---
+    function bufToHex(buffer) {
+      const bytes = new Uint8Array(buffer);
+      let hex = "";
+      for (let b of bytes) {
+        hex += b.toString(16).padStart(2, "0");
+      }
+      return hex;
+    }
+
+    // --- compute SHA-256 on UTF-8 string ---
+    async function sha256Hex(str) {
+      const enc = new TextEncoder();
+      const data = enc.encode(str);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+      return bufToHex(hashBuffer);
+    }
+
+    // --- main check ---
+    document.getElementById("unlockBtn").addEventListener("click", async () => {
+      const input = document.getElementById("passwordInput").value || "";
+      const errorEl = document.getElementById("errorMsg");
+      errorEl.textContent = "";
+
+      try {
+        const hashedInput = await sha256Hex(input);
+        if (hashedInput === storedHashHex) {
+          // success: replace page with iframe (or change location)
+          // Announcement (as requested): when entering the iframe page, show note about CSS blocking
+          document.body.innerHTML = `
+            <div style="position:fixed;left:0;right:0;top:0;background:#121212cc;color:#fff;padding:10px;text-align:center;z-index:9999;font-family:Poppins,system-ui;">
+              Note: many sites disable cross-origin styles/scripts — CSS may not load correctly.
+            </div>
+            <iframe src="https://cool-tara-ethanytangcodes-2e992c09.koyeb.app/" ></iframe>
+          `;
+        } else {
+          errorEl.textContent = "Wrong password, try again.";
+        }
+      } catch (err) {
+        console.error(err);
+        errorEl.textContent = "An error occurred. Open console for details.";
+      }
+    });
+
+    // Optional: press Enter to submit
+    document.getElementById("passwordInput").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") document.getElementById("unlockBtn").click();
+    });
+
+  </script>
+</body>
+</html>
