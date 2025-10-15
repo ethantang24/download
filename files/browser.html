@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ethan Browser</title>
+<style>
+body {
+  margin:0;
+  font-family:'Poppins',sans-serif;
+  background:#111;
+  color:white;
+  display:flex;
+  flex-direction:column;
+  height:100vh;
+}
+header{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  padding:6px 10px;
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(5px);
+}
+header button{
+  padding:6px 10px;
+  border:none;
+  border-radius:8px;
+  background:rgba(255,255,255,0.1);
+  color:white;
+  cursor:pointer;
+}
+header button:hover{
+  background:rgba(255,255,255,0.2);
+}
+.tab-bar{
+  display:flex;
+  gap:5px;
+  padding:4px 10px;
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(5px);
+  overflow-x:auto;
+}
+.tab{
+  padding:4px 10px;
+  border-radius:8px;
+  background:rgba(255,255,255,0.12);
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+.tab.active{
+  background:rgba(255,255,255,0.25);
+}
+.tab .close-btn{
+  color:#aaa;
+  font-weight:bold;
+  cursor:pointer;
+}
+.tab .close-btn:hover{
+  color:#ff5c5c;
+}
+iframe{
+  flex:1;
+  border:none;
+  width:100%;
+}
+footer{
+  text-align:center;
+  padding:4px;
+  font-size:12px;
+  color:#aaa;
+  background:rgba(255,255,255,0.05);
+}
+</style>
+</head>
+<body>
+
+<header>
+  <button onclick="goBack()">←</button>
+  <button onclick="reloadPage()">⟳</button>
+  <button onclick="goHome()">🏠 Home</button>
+  <button onclick="showInfo()">ℹ️ Info</button>
+</header>
+
+<div class="tab-bar" id="tabBar">
+  <button onclick="addTab()">+ Add Tab</button>
+</div>
+
+<iframe id="browserFrame" src=""></iframe>
+<footer>⚡ Ethan Browser</footer>
+
+<script>
+alert("⚠️ Welcome to Ethan Browser!");
+
+// References
+const iframe = document.getElementById('browserFrame');
+const tabBar = document.getElementById('tabBar');
+
+let tabs = [];
+let activeTab = 0;
+const homepage = "https://ethanytangcodes.github.io";
+
+function addTab(url){
+  const tab = {
+    url: url?url:homepage,
+    history: [],
+    historyIndex:-1
+  };
+  tabs.push(tab);
+  renderTabs();
+  switchTab(tabs.length-1);
+}
+
+function renderTabs(){
+  tabBar.innerHTML='<button onclick="addTab()">+ Add Tab</button>';
+  tabs.forEach((t,i)=>{
+    const tabEl=document.createElement('div');
+    tabEl.className='tab'+(i===activeTab?' active':'');
+    tabEl.innerHTML=`<span>Tab ${i+1}</span> <span class="close-btn" onclick="closeTab(event,${i})">×</span>`;
+    tabEl.onclick=()=>switchTab(i);
+    tabBar.appendChild(tabEl);
+  });
+}
+
+function switchTab(i){
+  activeTab=i;
+  const tab=tabs[i];
+  iframe.src=tab.url;
+  renderTabs();
+}
+
+function closeTab(e,i){
+  e.stopPropagation();
+  tabs.splice(i,1);
+  if(activeTab>=tabs.length) activeTab=tabs.length-1;
+  if(tabs.length===0)addTab();
+  switchTab(activeTab);
+}
+
+function goBack(){
+  const tab=tabs[activeTab];
+  if(tab.historyIndex>0){
+    tab.historyIndex--;
+    tab.url=tab.history[tab.historyIndex];
+    iframe.src=tab.url;
+  }
+}
+
+function reloadPage(){
+  iframe.src=iframe.src;
+}
+
+function goHome(){
+  const tab=tabs[activeTab];
+  tab.url = homepage;
+  tab.history = [];
+  tab.historyIndex = -1;
+  iframe.src = homepage;
+}
+
+// Info button
+function showInfo(){
+  alert("Ethan Browser\nVersion 1.0\nMade by Ethan Tang");
+}
+
+// Intercept links in same-origin pages
+function injectLinkInterceptor(){
+  try{
+    const doc=iframe.contentDocument||iframe.contentWindow.document;
+    const links=doc.querySelectorAll('a');
+    links.forEach(link=>{
+      link.addEventListener('click', e=>{
+        const url = link.href;
+        if(url.startsWith(homepage)){
+          e.preventDefault();
+          const tab=tabs[activeTab];
+          tab.url=url;
+          tab.history.push(url);
+          tab.historyIndex=tab.history.length-1;
+          iframe.src=url;
+        } else {
+          // prevent navigating to external sites
+          e.preventDefault();
+          alert("Links outside the site are blocked.");
+        }
+      });
+    });
+  }catch(err){
+    console.warn("Cannot intercept links in cross-origin iframe.");
+  }
+}
+
+iframe.onload=function(){
+  injectLinkInterceptor();
+}
+
+// Initialize with one tab
+addTab();
+</script>
+
+</body>
+</html>
