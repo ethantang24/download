@@ -5,24 +5,32 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ethan Browser</title>
 <style>
+:root {
+  --bg: #111;
+  --fg: #fff;
+  --header: rgba(255,255,255,0.05);
+  --tab-bg: rgba(255,255,255,0.12);
+  --tab-active: rgba(255,255,255,0.25);
+}
 body {
   margin:0;
   font-family:'Poppins',sans-serif;
-  background:#111;
-  color:white;
+  background:var(--bg);
+  color:var(--fg);
   display:flex;
   flex-direction:column;
   height:100vh;
+  transition: background 0.5s ease;
 }
-header{
+header {
   display:flex;
   align-items:center;
   gap:5px;
   padding:6px 10px;
-  background:rgba(255,255,255,0.05);
+  background:var(--header);
   backdrop-filter:blur(5px);
 }
-header button{
+header button {
   padding:6px 10px;
   border:none;
   border-radius:8px;
@@ -30,49 +38,99 @@ header button{
   color:white;
   cursor:pointer;
 }
-header button:hover{
+header button:hover {
   background:rgba(255,255,255,0.2);
 }
-.tab-bar{
+.tab-bar {
   display:flex;
   gap:5px;
   padding:4px 10px;
-  background:rgba(255,255,255,0.05);
+  background:var(--header);
   backdrop-filter:blur(5px);
   overflow-x:auto;
 }
-.tab{
+.tab {
   padding:4px 10px;
   border-radius:8px;
-  background:rgba(255,255,255,0.12);
-  cursor:pointer;
+  background:var(--tab-bg);
+  cursor:grab;
   display:flex;
   align-items:center;
   gap:5px;
+  user-select:none;
 }
-.tab.active{
-  background:rgba(255,255,255,0.25);
-}
-.tab .close-btn{
-  color:#aaa;
-  font-weight:bold;
-  cursor:pointer;
-}
-.tab .close-btn:hover{
-  color:#ff5c5c;
-}
-iframe{
+.tab.active { background:var(--tab-active); }
+.tab .close-btn { color:#aaa; font-weight:bold; cursor:pointer; }
+.tab .close-btn:hover { color:#ff5c5c; }
+iframe {
   flex:1;
   border:none;
   width:100%;
 }
-footer{
+footer {
   text-align:center;
   padding:4px;
   font-size:12px;
   color:#aaa;
-  background:rgba(255,255,255,0.05);
+  background:var(--header);
 }
+#tabSettings {
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  background:rgba(30,30,30,0.95);
+  padding:20px;
+  border-radius:12px;
+  display:none;
+  flex-direction:column;
+  gap:10px;
+  min-width:250px;
+  box-shadow:0 0 15px rgba(0,0,0,0.5);
+  z-index:100;
+}
+#tabSettings input, #tabSettings select {
+  padding:6px;
+  border:none;
+  border-radius:6px;
+  width:100%;
+}
+#tabSettings button {
+  padding:6px 10px;
+  border:none;
+  border-radius:8px;
+  background:rgba(255,255,255,0.1);
+  color:white;
+  cursor:pointer;
+}
+#tabSettings button:hover { background:rgba(255,255,255,0.2); }
+
+/* Update Popup */
+#updatePopup {
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:rgba(255,255,255,0.15);
+  backdrop-filter:blur(10px);
+  padding:15px 20px;
+  border-radius:12px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.4);
+  color:white;
+  font-size:14px;
+  display:none;
+  max-width:300px;
+  z-index:200;
+}
+#updatePopup button {
+  margin-top:10px;
+  border:none;
+  padding:6px 10px;
+  border-radius:8px;
+  background:rgba(255,255,255,0.2);
+  color:white;
+  cursor:pointer;
+}
+#updatePopup button:hover { background:rgba(255,255,255,0.3); }
 </style>
 </head>
 <body>
@@ -81,124 +139,117 @@ footer{
   <button onclick="goBack()">←</button>
   <button onclick="reloadPage()">⟳</button>
   <button onclick="goHome()">🏠 Home</button>
-  <button onclick="showInfo()">ℹ️ Info</button>
+  <button onclick="openSettings()">⚙️ Settings</button>
 </header>
 
 <div class="tab-bar" id="tabBar">
-  <button onclick="addTab()">+ Add Tab</button>
+  <button onclick="addTab()">＋</button>
 </div>
 
-<iframe id="browserFrame" src=""></iframe>
-<footer>⚡ Ethan Browser</footer>
+<iframe id="browserFrame" src="https://example.com"></iframe>
+<footer>Ethan browser v1.0.1</footer>
+
+<div id="tabSettings">
+  <h3>Settings</h3>
+  <label>Theme:</label>
+  <select id="themeSelect" onchange="setTheme(this.value)">
+    <option value="dark">Dark</option>
+    <option value="gradient">Gradient</option>
+    <option value="frosty">Frosty Glass</option>
+    <option value="sunset">Sunset</option>
+    <option value="neon">Neon</option>
+    <option value="aqua">Aqua</option>
+    <option value="fire">Fire</option>
+    <option value="lavender">Lavender</option>
+  </select>
+  <button onclick="closeSettings()">Close</button>
+</div>
+
+<div id="updatePopup">
+  <div id="updateMessage"></div>
+  <button id="closePopupBtn" onclick="closeUpdatePopup()">Close</button>
+</div>
 
 <script>
-alert("⚠️ Welcome to Ethan Browser!");
+const currentVersion = "1.0.1";
+const workerURL = "https://browserupdate.ethantytang11.workers.dev";
+let forcedUpdate = false;
 
-// References
-const iframe = document.getElementById('browserFrame');
-const tabBar = document.getElementById('tabBar');
-
-let tabs = [];
-let activeTab = 0;
-const homepage = "https://ethanytangcodes.github.io";
-
-function addTab(url){
-  const tab = {
-    url: url?url:homepage,
-    history: [],
-    historyIndex:-1
-  };
-  tabs.push(tab);
-  renderTabs();
-  switchTab(tabs.length-1);
+function versionDiff(v1, v2) {
+  const a = v1.split('.').map(Number);
+  const b = v2.split('.').map(Number);
+  return (b[0]-a[0])*100 + (b[1]-a[1])*10 + (b[2]-a[2]);
 }
 
-function renderTabs(){
-  tabBar.innerHTML='<button onclick="addTab()">+ Add Tab</button>';
-  tabs.forEach((t,i)=>{
-    const tabEl=document.createElement('div');
-    tabEl.className='tab'+(i===activeTab?' active':'');
-    tabEl.innerHTML=`<span>Tab ${i+1}</span> <span class="close-btn" onclick="closeTab(event,${i})">×</span>`;
-    tabEl.onclick=()=>switchTab(i);
-    tabBar.appendChild(tabEl);
-  });
-}
+async function checkForUpdates() {
+  try {
+    const res = await fetch(workerURL, { method: "GET", headers: { "Content-Type": "application/json" }});
+    if (!res.ok) return;
+    const data = await res.json();
 
-function switchTab(i){
-  activeTab=i;
-  const tab=tabs[i];
-  iframe.src=tab.url;
-  renderTabs();
-}
+    if(data.version) {
+      const diff = versionDiff(currentVersion, data.version);
+      const popup = document.getElementById("updatePopup");
+      const msgEl = document.getElementById("updateMessage");
+      const closeBtn = document.getElementById("closePopupBtn");
 
-function closeTab(e,i){
-  e.stopPropagation();
-  tabs.splice(i,1);
-  if(activeTab>=tabs.length) activeTab=tabs.length-1;
-  if(tabs.length===0)addTab();
-  switchTab(activeTab);
-}
-
-function goBack(){
-  const tab=tabs[activeTab];
-  if(tab.historyIndex>0){
-    tab.historyIndex--;
-    tab.url=tab.history[tab.historyIndex];
-    iframe.src=tab.url;
+      if(diff >= 20) {
+        forcedUpdate = true;
+        msgEl.innerText = "Sorry, this version of Ethan Browser is no longer supported 😢";
+        closeBtn.style.display = "none"; // hide close button
+        popup.style.display = "block";
+      } else if(diff > 0) {
+        forcedUpdate = false;
+        closeBtn.style.display = "block"; // allow closing
+        showUpdatePopup(data.message || "A new version is available!");
+      }
+    }
+  } catch(err) {
+    console.log("Update check failed:", err);
   }
 }
 
-function reloadPage(){
-  iframe.src=iframe.src;
+function showUpdatePopup(msg) {
+  const popup = document.getElementById("updatePopup");
+  document.getElementById("updateMessage").innerText = msg;
+  popup.style.display = "block";
 }
 
-function goHome(){
-  const tab=tabs[activeTab];
-  tab.url = homepage;
-  tab.history = [];
-  tab.historyIndex = -1;
-  iframe.src = homepage;
-}
-
-// Info button
-function showInfo(){
-  alert("Ethan Browser\nVersion 1.0\nMade by Ethan Tang");
-}
-
-// Intercept links in same-origin pages
-function injectLinkInterceptor(){
-  try{
-    const doc=iframe.contentDocument||iframe.contentWindow.document;
-    const links=doc.querySelectorAll('a');
-    links.forEach(link=>{
-      link.addEventListener('click', e=>{
-        const url = link.href;
-        if(url.startsWith(homepage)){
-          e.preventDefault();
-          const tab=tabs[activeTab];
-          tab.url=url;
-          tab.history.push(url);
-          tab.historyIndex=tab.history.length-1;
-          iframe.src=url;
-        } else {
-          // prevent navigating to external sites
-          e.preventDefault();
-          alert("Links outside the site are blocked.");
-        }
-      });
-    });
-  }catch(err){
-    console.warn("Cannot intercept links in cross-origin iframe.");
+function closeUpdatePopup() {
+  if(forcedUpdate){
+    document.body.innerHTML = "<h2 style='color:white; text-align:center; margin-top:20%'>This version of Ethan Browser is not supported anymore 😢</h2>";
+  } else {
+    document.getElementById("updatePopup").style.display = "none";
   }
 }
 
-iframe.onload=function(){
-  injectLinkInterceptor();
+function openSettings(){ document.getElementById("tabSettings").style.display="flex"; }
+function closeSettings(){ document.getElementById("tabSettings").style.display="none"; }
+function goBack(){ document.getElementById('browserFrame').contentWindow.history.back(); }
+function reloadPage(){ document.getElementById('browserFrame').contentWindow.location.reload(); }
+function goHome(){ document.getElementById('browserFrame').src="https://example.com"; }
+
+function setTheme(theme) {
+  const root = document.documentElement;
+  localStorage.setItem("theme", theme);
+  switch(theme) {
+    case "dark":
+      root.style.setProperty("--bg","#111"); root.style.setProperty("--header","rgba(255,255,255,0.05)"); break;
+    case "gradient": root.style.setProperty("--bg","linear-gradient(135deg,#ff6ec4,#7873f5)"); break;
+    case "frosty": root.style.setProperty("--bg","rgba(255,255,255,0.05)"); break;
+    case "sunset": root.style.setProperty("--bg","linear-gradient(120deg,#ff9966,#ff5e62)"); break;
+    case "neon": root.style.setProperty("--bg","linear-gradient(135deg,#00f260,#0575e6)"); break;
+    case "aqua": root.style.setProperty("--bg","linear-gradient(135deg,#00d2ff,#3a7bd5)"); break;
+    case "fire": root.style.setProperty("--bg","linear-gradient(135deg,#ff416c,#ff4b2b)"); break;
+    case "lavender": root.style.setProperty("--bg","linear-gradient(135deg,#e0c3fc,#8ec5fc)"); break;
+  }
 }
 
-// Initialize with one tab
-addTab();
+window.onload = () => {
+  const savedTheme = localStorage.getItem("theme");
+  if(savedTheme) setTheme(savedTheme);
+  checkForUpdates();
+};
 </script>
-
 </body>
 </html>
