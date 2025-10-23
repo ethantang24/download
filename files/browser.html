@@ -38,97 +38,29 @@ header button {
   color:white;
   cursor:pointer;
 }
-header button:hover {
-  background:rgba(255,255,255,0.2);
-}
-.tab-bar {
-  display:flex;
-  gap:5px;
-  padding:4px 10px;
-  background:var(--header);
-  backdrop-filter:blur(5px);
-  overflow-x:auto;
-}
-.tab {
-  padding:4px 10px;
-  border-radius:8px;
-  background:var(--tab-bg);
-  cursor:grab;
-  display:flex;
-  align-items:center;
-  gap:5px;
-  user-select:none;
-}
+header button:hover { background:rgba(255,255,255,0.2); }
+.tab-bar { display:flex; gap:5px; padding:4px 10px; background:var(--header); backdrop-filter:blur(5px); overflow-x:auto; }
+.tab { padding:4px 10px; border-radius:8px; background:var(--tab-bg); cursor:grab; display:flex; align-items:center; gap:5px; user-select:none; }
 .tab.active { background:var(--tab-active); }
 .tab .close-btn { color:#aaa; font-weight:bold; cursor:pointer; }
 .tab .close-btn:hover { color:#ff5c5c; }
-iframe {
-  flex:1;
-  border:none;
-  width:100%;
-}
-footer {
-  text-align:center;
-  padding:4px;
-  font-size:12px;
-  color:#aaa;
-  background:var(--header);
-}
-#tabSettings {
-  position:fixed;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  background:rgba(30,30,30,0.95);
-  padding:20px;
-  border-radius:12px;
-  display:none;
-  flex-direction:column;
-  gap:10px;
-  min-width:250px;
-  box-shadow:0 0 15px rgba(0,0,0,0.5);
-  z-index:100;
-}
-#tabSettings input, #tabSettings select {
-  padding:6px;
-  border:none;
-  border-radius:6px;
-  width:100%;
-}
-#tabSettings button {
-  padding:6px 10px;
-  border:none;
-  border-radius:8px;
-  background:rgba(255,255,255,0.1);
-  color:white;
-  cursor:pointer;
-}
+iframe { flex:1; border:none; width:100%; }
+footer { text-align:center; padding:4px; font-size:12px; color:#aaa; background:var(--header); }
+#tabSettings { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(30,30,30,0.95); padding:20px; border-radius:12px; display:none; flex-direction:column; gap:10px; min-width:250px; box-shadow:0 0 15px rgba(0,0,0,0.5); z-index:100; }
+#tabSettings input, #tabSettings select { padding:6px; border:none; border-radius:6px; width:100%; }
+#tabSettings button { padding:6px 10px; border:none; border-radius:8px; background:rgba(255,255,255,0.1); color:white; cursor:pointer; }
 #tabSettings button:hover { background:rgba(255,255,255,0.2); }
 
 /* Update Popup */
 #updatePopup {
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  background:rgba(255,255,255,0.15);
-  backdrop-filter:blur(10px);
-  padding:15px 20px;
-  border-radius:12px;
-  box-shadow:0 4px 20px rgba(0,0,0,0.4);
-  color:white;
-  font-size:14px;
-  display:none;
-  max-width:300px;
-  z-index:200;
+  position:fixed; bottom:20px; right:20px; background:rgba(255,255,255,0.15);
+  backdrop-filter:blur(10px); padding:15px 20px; border-radius:12px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.4); color:white; font-size:14px;
+  display:none; max-width:300px; z-index:200;
 }
 #updatePopup button {
-  margin-top:10px;
-  border:none;
-  padding:6px 10px;
-  border-radius:8px;
-  background:rgba(255,255,255,0.2);
-  color:white;
-  cursor:pointer;
+  margin-top:10px; border:none; padding:6px 10px; border-radius:8px;
+  background:rgba(255,255,255,0.2); color:white; cursor:pointer;
 }
 #updatePopup button:hover { background:rgba(255,255,255,0.3); }
 </style>
@@ -147,7 +79,7 @@ footer {
 </div>
 
 <iframe id="browserFrame" src="https://example.com"></iframe>
-<footer>Ethan browser v1.0.1</footer>
+<footer>ethan browser v1.0.1</footer>
 
 <div id="tabSettings">
   <h3>Settings</h3>
@@ -168,86 +100,86 @@ footer {
 <div id="updatePopup">
   <div id="updateMessage"></div>
   <button id="closePopupBtn" onclick="closeUpdatePopup()">Close</button>
+  <button id="updateNowBtn" onclick="updateNow()">Update Now</button>
 </div>
 
 <script>
 const currentVersion = "1.0.1";
 const workerURL = "https://browserupdate.ethantytang11.workers.dev";
+const updatePage = "https://ethanytangcodes.github.io/download"; // redirect to your new version
 let forcedUpdate = false;
 
-function versionDiff(v1, v2) {
-  const a = v1.split('.').map(Number);
-  const b = v2.split('.').map(Number);
+function versionDiff(v1, v2){
+  const a=v1.split('.').map(Number); const b=v2.split('.').map(Number);
   return (b[0]-a[0])*100 + (b[1]-a[1])*10 + (b[2]-a[2]);
 }
 
-async function checkForUpdates() {
-  try {
-    const res = await fetch(workerURL, { method: "GET", headers: { "Content-Type": "application/json" }});
-    if (!res.ok) return;
+async function checkForUpdates(){
+  try{
+    const res = await fetch(workerURL,{method:"GET",headers:{"Content-Type":"application/json"}});
+    if(!res.ok) return;
     const data = await res.json();
+    if(data.version){
+      const diff = versionDiff(currentVersion,data.version);
+      const popup=document.getElementById("updatePopup");
+      const msgEl=document.getElementById("updateMessage");
+      const closeBtn=document.getElementById("closePopupBtn");
+      const updateBtn=document.getElementById("updateNowBtn");
 
-    if(data.version) {
-      const diff = versionDiff(currentVersion, data.version);
-      const popup = document.getElementById("updatePopup");
-      const msgEl = document.getElementById("updateMessage");
-      const closeBtn = document.getElementById("closePopupBtn");
-
-      if(diff >= 20) {
-        forcedUpdate = true;
-        msgEl.innerText = "Sorry, this version of Ethan Browser is no longer supported 😢";
-        closeBtn.style.display = "none"; // hide close button
-        popup.style.display = "block";
-      } else if(diff > 0) {
-        forcedUpdate = false;
-        closeBtn.style.display = "block"; // allow closing
-        showUpdatePopup(data.message || "A new version is available!");
+      if(diff>=20){
+        forcedUpdate=true;
+        msgEl.innerText="Sorry, this version of Ethan Browser is no longer supported 😢";
+        closeBtn.style.display="none";
+        updateBtn.style.display="block";
+        popup.style.display="block";
+      } else if(diff>0){
+        forcedUpdate=false;
+        msgEl.innerText=data.message || "A new version is available!";
+        closeBtn.style.display="block";
+        updateBtn.style.display="block";
+        popup.style.display="block";
+      } else {
+        popup.style.display="none";
       }
     }
-  } catch(err) {
-    console.log("Update check failed:", err);
-  }
+  } catch(err){ console.log("Update check failed:", err); }
 }
 
-function showUpdatePopup(msg) {
-  const popup = document.getElementById("updatePopup");
-  document.getElementById("updateMessage").innerText = msg;
-  popup.style.display = "block";
-}
-
-function closeUpdatePopup() {
+function closeUpdatePopup(){
   if(forcedUpdate){
-    document.body.innerHTML = "<h2 style='color:white; text-align:center; margin-top:20%'>This version of Ethan Browser is not supported anymore 😢</h2>";
+    document.body.innerHTML="<h2 style='color:white;text-align:center;margin-top:20%'>This version of Ethan Browser is not supported anymore 😢</h2>";
   } else {
-    document.getElementById("updatePopup").style.display = "none";
+    document.getElementById("updatePopup").style.display="none";
   }
 }
 
+function updateNow(){
+  window.location.href = updatePage;
+}
+
+// Theme + UI
 function openSettings(){ document.getElementById("tabSettings").style.display="flex"; }
 function closeSettings(){ document.getElementById("tabSettings").style.display="none"; }
 function goBack(){ document.getElementById('browserFrame').contentWindow.history.back(); }
 function reloadPage(){ document.getElementById('browserFrame').contentWindow.location.reload(); }
 function goHome(){ document.getElementById('browserFrame').src="https://example.com"; }
-
-function setTheme(theme) {
-  const root = document.documentElement;
-  localStorage.setItem("theme", theme);
-  switch(theme) {
-    case "dark":
-      root.style.setProperty("--bg","#111"); root.style.setProperty("--header","rgba(255,255,255,0.05)"); break;
-    case "gradient": root.style.setProperty("--bg","linear-gradient(135deg,#ff6ec4,#7873f5)"); break;
-    case "frosty": root.style.setProperty("--bg","rgba(255,255,255,0.05)"); break;
-    case "sunset": root.style.setProperty("--bg","linear-gradient(120deg,#ff9966,#ff5e62)"); break;
-    case "neon": root.style.setProperty("--bg","linear-gradient(135deg,#00f260,#0575e6)"); break;
-    case "aqua": root.style.setProperty("--bg","linear-gradient(135deg,#00d2ff,#3a7bd5)"); break;
-    case "fire": root.style.setProperty("--bg","linear-gradient(135deg,#ff416c,#ff4b2b)"); break;
-    case "lavender": root.style.setProperty("--bg","linear-gradient(135deg,#e0c3fc,#8ec5fc)"); break;
+function setTheme(theme){
+  const root=document.documentElement;
+  localStorage.setItem("theme",theme);
+  switch(theme){
+    case"dark":root.style.setProperty("--bg","#111");root.style.setProperty("--header","rgba(255,255,255,0.05)");break;
+    case"gradient":root.style.setProperty("--bg","linear-gradient(135deg,#ff6ec4,#7873f5)");break;
+    case"frosty":root.style.setProperty("--bg","rgba(255,255,255,0.05)");break;
+    case"sunset":root.style.setProperty("--bg","linear-gradient(120deg,#ff9966,#ff5e62)");break;
+    case"neon":root.style.setProperty("--bg","linear-gradient(135deg,#00f260,#0575e6)");break;
+    case"aqua":root.style.setProperty("--bg","linear-gradient(135deg,#00d2ff,#3a7bd5)");break;
+    case"fire":root.style.setProperty("--bg","linear-gradient(135deg,#ff416c,#ff4b2b)");break;
+    case"lavender":root.style.setProperty("--bg","linear-gradient(135deg,#e0c3fc,#8ec5fc)");break;
   }
 }
 
-window.onload = () => {
-  const savedTheme = localStorage.getItem("theme");
-  if(savedTheme) setTheme(savedTheme);
+window.onload=()=>{
+  const savedTheme=localStorage.getItem("theme"); if(savedTheme) setTheme(savedTheme);
   checkForUpdates();
 };
 </script>
