@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ethan Browser</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Orbitron:wght@500&family=Raleway:wght@500&family=Press+Start+2P&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg:#111;
@@ -11,16 +12,17 @@
   --header:rgba(255,255,255,0.05);
   --tab-bg:rgba(255,255,255,0.12);
   --tab-active:rgba(255,255,255,0.25);
+  --font:'Poppins', sans-serif;
 }
 body {
   margin:0;
-  font-family:'Poppins',sans-serif;
+  font-family:var(--font);
   background:var(--bg);
   color:var(--fg);
   display:flex;
   flex-direction:column;
   height:100vh;
-  transition:background 0.5s ease;
+  transition:background 0.6s ease, color 0.6s ease, font-family 0.6s ease;
 }
 header {
   display:flex;
@@ -35,7 +37,7 @@ header button {
   border:none;
   border-radius:8px;
   background:rgba(255,255,255,0.1);
-  color:white;
+  color:var(--fg);
   cursor:pointer;
 }
 header button:hover { background:rgba(255,255,255,0.2); }
@@ -53,7 +55,6 @@ header button:hover { background:rgba(255,255,255,0.2); }
   gap:5px;
   padding:4px 10px;
   background:var(--header);
-  backdrop-filter:blur(5px);
   overflow-x:auto;
 }
 .tab {
@@ -67,8 +68,6 @@ header button:hover { background:rgba(255,255,255,0.2); }
   user-select:none;
 }
 .tab.active { background:var(--tab-active); }
-.tab .close-btn { color:#aaa; font-weight:bold; cursor:pointer; }
-.tab .close-btn:hover { color:#ff5c5c; }
 iframe {
   flex:1;
   border:none;
@@ -81,8 +80,6 @@ footer {
   color:#aaa;
   background:var(--header);
 }
-
-/* Settings modal */
 #tabSettings {
   position:fixed;
   top:50%;
@@ -112,9 +109,6 @@ footer {
   color:white;
   cursor:pointer;
 }
-#tabSettings button:hover { background:rgba(255,255,255,0.2); }
-
-/* Update Popup */
 #updatePopup {
   position:fixed;
   bottom:20px;
@@ -139,7 +133,6 @@ footer {
   color:white;
   cursor:pointer;
 }
-#updatePopup button:hover { background:rgba(255,255,255,0.3); }
 </style>
 </head>
 <body>
@@ -147,7 +140,7 @@ footer {
 <header>
   <button onclick="goBack()">←</button>
   <button onclick="reloadPage()">⟳</button>
-  <button onclick="goHome()">🏠 Home</button>
+  <button onclick="goHome()">🏠</button>
   <input id="urlDisplay" readonly value="Loading...">
   <button onclick="openSettings()">⚙️</button>
 </header>
@@ -159,14 +152,13 @@ footer {
 <iframe id="browserFrame" src=""></iframe>
 <footer>ethan browser v1.0.1</footer>
 
-<!-- Settings Modal -->
 <div id="tabSettings">
   <h3>Settings</h3>
   <label>Theme:</label>
   <select id="themeSelect" onchange="setTheme(this.value)">
     <option value="dark">Dark</option>
     <option value="gradient">Gradient</option>
-    <option value="frosty">Frosty Glass</option>
+    <option value="frosty">Frosty</option>
     <option value="sunset">Sunset</option>
     <option value="neon">Neon</option>
     <option value="aqua">Aqua</option>
@@ -176,22 +168,21 @@ footer {
   <button onclick="closeSettings()">Close</button>
 </div>
 
-<!-- Update Popup -->
 <div id="updatePopup">
   <div id="updateMessage"></div>
   <button id="closePopupBtn" onclick="closeUpdatePopup()">Close</button>
-  <button id="updateNowBtn" onclick="updateNow()">Update Now</button>
+  <button id="updateNowBtn" onclick="updateNow()">Update</button>
 </div>
 
 <script>
-const currentVersion = "1.0.1";
-const workerURL = "https://browserupdate.ethantytang11.workers.dev";
-const allowedDomain = "https://ethantytangcodes.github.io";
-const updatePage = allowedDomain + "/download";
-let forcedUpdate = false;
+const currentVersion="1.0.1";
+const workerURL="https://browserupdate.ethantytang11.workers.dev/version";
+const allowedDomain="https://ethanytangcodes.github.io";
+const updatePage=allowedDomain+"/download";
+let forcedUpdate=false;
 
-let tabs = [];
-let currentTabIndex = 0;
+let tabs=[];
+let currentTabIndex=0;
 
 function versionDiff(v1,v2){
   const a=v1.split('.').map(Number);
@@ -201,97 +192,125 @@ function versionDiff(v1,v2){
 
 async function checkForUpdates(){
   try{
-    const res = await fetch(workerURL,{method:"GET",headers:{"Content-Type":"application/json"}});
-    if(!res.ok) return;
-    const data = await res.json();
-    if(data.version){
-      const diff = versionDiff(currentVersion,data.version);
-      const popup = document.getElementById("updatePopup");
-      const msg = document.getElementById("updateMessage");
-      const closeBtn = document.getElementById("closePopupBtn");
-      const updateBtn = document.getElementById("updateNowBtn");
-      if(diff >= 20){
-        forcedUpdate = true;
-        msg.innerText = "Sorry, this version of Ethan Browser is no longer supported 😢";
-        closeBtn.style.display = "none";
-        updateBtn.style.display = "block";
-        popup.style.display = "block";
-      } else if(diff > 0){
-        forcedUpdate = false;
-        msg.innerText = data.message || "A new version is available!";
-        closeBtn.style.display = "block";
-        updateBtn.style.display = "block";
-        popup.style.display = "block";
-      }
+    const res=await fetch(workerURL);
+    if(!res.ok)return;
+    const data=await res.json();
+    const diff=versionDiff(currentVersion,data.version);
+    const popup=document.getElementById("updatePopup");
+    const msg=document.getElementById("updateMessage");
+    const closeBtn=document.getElementById("closePopupBtn");
+    const updateBtn=document.getElementById("updateNowBtn");
+    if(diff>=20){
+      forcedUpdate=true;
+      msg.innerText="This version of Ethan Browser is no longer supported 😢";
+      closeBtn.style.display="none";
+      updateBtn.style.display="block";
+      popup.style.display="block";
+    } else if(diff>0){
+      forcedUpdate=false;
+      msg.innerText=data.message||"A new version is available!";
+      closeBtn.style.display="block";
+      updateBtn.style.display="block";
+      popup.style.display="block";
     }
-  }catch(err){ console.log("Update check failed:", err); }
+  }catch(e){console.error(e);}
 }
-
 function closeUpdatePopup(){
   if(forcedUpdate){
-    document.body.innerHTML = "<h2 style='color:white;text-align:center;margin-top:20%'>This version of Ethan Browser is not supported anymore 😢</h2>";
-  } else document.getElementById("updatePopup").style.display = "none";
+    document.body.innerHTML="<h2 style='color:white;text-align:center;margin-top:20%'>Unsupported Version 😢</h2>";
+  }else document.getElementById("updatePopup").style.display="none";
 }
-function updateNow(){ window.location.href = updatePage; }
-function openSettings(){ document.getElementById("tabSettings").style.display = "flex"; }
-function closeSettings(){ document.getElementById("tabSettings").style.display = "none"; }
+function updateNow(){window.location.href=updatePage;}
+function openSettings(){document.getElementById("tabSettings").style.display="flex";}
+function closeSettings(){document.getElementById("tabSettings").style.display="none";}
 
 function setTheme(theme){
-  const root = document.documentElement;
-  localStorage.setItem("theme", theme);
+  const root=document.documentElement;
+  localStorage.setItem("theme",theme);
   switch(theme){
-    case"dark":root.style.setProperty("--bg","#111");break;
-    case"gradient":root.style.setProperty("--bg","linear-gradient(135deg,#ff6ec4,#7873f5)");break;
-    case"frosty":root.style.setProperty("--bg","rgba(255,255,255,0.05)");break;
-    case"sunset":root.style.setProperty("--bg","linear-gradient(120deg,#ff9966,#ff5e62)");break;
-    case"neon":root.style.setProperty("--bg","linear-gradient(135deg,#00f260,#0575e6)");break;
-    case"aqua":root.style.setProperty("--bg","linear-gradient(135deg,#00d2ff,#3a7bd5)");break;
-    case"fire":root.style.setProperty("--bg","linear-gradient(135deg,#ff416c,#ff4b2b)");break;
-    case"lavender":root.style.setProperty("--bg","linear-gradient(135deg,#c471ed,#f64f59)");break;
+    case"dark":
+      root.style.setProperty("--bg","#111");
+      root.style.setProperty("--fg","#fff");
+      root.style.setProperty("--font","'Poppins', sans-serif");
+      break;
+    case"gradient":
+      root.style.setProperty("--bg","linear-gradient(135deg,#ff6ec4,#7873f5)");
+      root.style.setProperty("--fg","#fff");
+      root.style.setProperty("--font","'Raleway', sans-serif");
+      break;
+    case"frosty":
+      root.style.setProperty("--bg","rgba(240,240,255,0.1)");
+      root.style.setProperty("--fg","#111");
+      root.style.setProperty("--font","'Roboto', sans-serif");
+      break;
+    case"sunset":
+      root.style.setProperty("--bg","linear-gradient(120deg,#ff9966,#ff5e62)");
+      root.style.setProperty("--fg","#fff");
+      root.style.setProperty("--font","'Raleway', sans-serif");
+      break;
+    case"neon":
+      root.style.setProperty("--bg","linear-gradient(135deg,#00f260,#0575e6)");
+      root.style.setProperty("--fg","#0ff");
+      root.style.setProperty("--font","'Orbitron', sans-serif");
+      break;
+    case"aqua":
+      root.style.setProperty("--bg","linear-gradient(135deg,#00d2ff,#3a7bd5)");
+      root.style.setProperty("--fg","#fff");
+      root.style.setProperty("--font","'Roboto', sans-serif");
+      break;
+    case"fire":
+      root.style.setProperty("--bg","linear-gradient(135deg,#ff416c,#ff4b2b)");
+      root.style.setProperty("--fg","#fff");
+      root.style.setProperty("--font","'Press Start 2P', cursive");
+      break;
+    case"lavender":
+      root.style.setProperty("--bg","linear-gradient(135deg,#c471ed,#f64f59)");
+      root.style.setProperty("--fg","#fff");
+      root.style.setProperty("--font","'Raleway', sans-serif");
+      break;
   }
 }
 
-function goBack(){ document.getElementById('browserFrame').contentWindow.history.back(); }
-function reloadPage(){ document.getElementById('browserFrame').contentWindow.location.reload(); }
-function goHome(){ loadURL(allowedDomain + "/index.html"); }
+function goBack(){document.getElementById('browserFrame').contentWindow.history.back();}
+function reloadPage(){document.getElementById('browserFrame').contentWindow.location.reload();}
+function goHome(){loadURL(allowedDomain+"/index.html");}
 
 function loadURL(url){
   if(!url.startsWith(allowedDomain)){
-    alert("You can only browse sites under ethantytangcodes.github.io!");
+    alert("You can only browse ethanytangcodes.github.io!");
     return;
   }
-  tabs[currentTabIndex].url = url;
-  document.getElementById('browserFrame').src = url;
-  document.getElementById('urlDisplay').value = url;
+  tabs[currentTabIndex].url=url;
+  document.getElementById('browserFrame').src=url;
+  document.getElementById('urlDisplay').value=url;
 }
 
-function addTab(url = allowedDomain + "/index.html"){
-  const tabBar = document.getElementById("tabBar");
-  const tabIndex = tabs.length;
-  const tabObj = { title:"Tab " + (tabIndex+1), url };
+function addTab(url=allowedDomain+"/index.html"){
+  const tabBar=document.getElementById("tabBar");
+  const tabIndex=tabs.length;
+  const tabObj={title:"Tab "+(tabIndex+1),url};
   tabs.push(tabObj);
 
-  const tabEl = document.createElement("div");
-  tabEl.className = "tab";
-  tabEl.innerText = tabObj.title;
-  tabEl.onclick = () => switchTab(tabIndex);
+  const tabEl=document.createElement("div");
+  tabEl.className="tab";
+  tabEl.innerText=tabObj.title;
+  tabEl.onclick=()=>switchTab(tabIndex);
 
-  tabBar.insertBefore(tabEl, tabBar.lastElementChild);
+  tabBar.insertBefore(tabEl,tabBar.lastElementChild);
   switchTab(tabIndex);
 }
-
 function switchTab(index){
-  currentTabIndex = index;
-  const tabEls = document.querySelectorAll(".tab");
-  tabEls.forEach((t,i)=>t.classList.toggle("active", i===index));
-  const iframe = document.getElementById('browserFrame');
-  iframe.src = tabs[index].url;
-  document.getElementById('urlDisplay').value = tabs[index].url;
+  currentTabIndex=index;
+  const tabEls=document.querySelectorAll(".tab");
+  tabEls.forEach((t,i)=>t.classList.toggle("active",i===index));
+  const iframe=document.getElementById('browserFrame');
+  iframe.src=tabs[index].url;
+  document.getElementById('urlDisplay').value=tabs[index].url;
 }
 
-window.onload = () => {
-  const savedTheme = localStorage.getItem("theme");
-  if(savedTheme) setTheme(savedTheme);
+window.onload=()=>{
+  const savedTheme=localStorage.getItem("theme");
+  if(savedTheme)setTheme(savedTheme);
   checkForUpdates();
   addTab();
 };
