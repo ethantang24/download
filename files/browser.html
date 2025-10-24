@@ -109,29 +109,65 @@ footer {
   color:white;
   cursor:pointer;
 }
+
+/* === Update Popup Styling === */
+#popupBackdrop {
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.7);
+  backdrop-filter:blur(3px);
+  z-index:999;
+}
 #updatePopup {
   position:fixed;
-  bottom:20px;
-  right:20px;
-  background:rgba(255,255,255,0.15);
-  backdrop-filter:blur(10px);
-  padding:15px 20px;
-  border-radius:12px;
-  box-shadow:0 4px 20px rgba(0,0,0,0.4);
-  color:white;
-  font-size:14px;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  background:rgba(25,25,25,0.95);
+  border-radius:16px;
+  padding:25px 30px;
+  box-shadow:0 0 40px rgba(0,0,0,0.6);
+  width:320px;
+  text-align:center;
   display:none;
-  max-width:300px;
-  z-index:200;
+  flex-direction:column;
+  gap:15px;
+  color:white;
+  z-index:1000;
+  animation:fadeIn 0.4s ease;
+}
+#updatePopup h2 {
+  margin:0;
+  font-size:18px;
+  font-weight:600;
+}
+#updatePopup p {
+  font-size:14px;
+  line-height:1.4;
+  color:#ddd;
 }
 #updatePopup button {
-  margin-top:10px;
   border:none;
-  padding:6px 10px;
-  border-radius:8px;
-  background:rgba(255,255,255,0.2);
-  color:white;
+  border-radius:10px;
+  padding:8px 14px;
   cursor:pointer;
+  color:white;
+  font-weight:500;
+  transition:background 0.3s ease;
+}
+#closePopupBtn {
+  background:#555;
+}
+#updateNowBtn {
+  background:#007bff;
+}
+#closePopupBtn:hover { background:#777; }
+#updateNowBtn:hover { background:#1493ff; }
+
+@keyframes fadeIn {
+  from { opacity:0; transform:translate(-50%,-48%); }
+  to { opacity:1; transform:translate(-50%,-50%); }
 }
 </style>
 </head>
@@ -168,10 +204,15 @@ footer {
   <button onclick="closeSettings()">Close</button>
 </div>
 
+<!-- BACKDROP + POPUP -->
+<div id="popupBackdrop"></div>
 <div id="updatePopup">
-  <div id="updateMessage"></div>
-  <button id="closePopupBtn" onclick="closeUpdatePopup()">Close</button>
-  <button id="updateNowBtn" onclick="updateNow()">Update</button>
+  <h2>🔔 Update Available</h2>
+  <p id="updateMessage"></p>
+  <div>
+    <button id="closePopupBtn" onclick="closeUpdatePopup()">Close</button>
+    <button id="updateNowBtn" onclick="updateNow()">Update</button>
+  </div>
 </div>
 
 <script>
@@ -197,6 +238,7 @@ async function checkForUpdates(){
     const data=await res.json();
     const diff=versionDiff(currentVersion,data.version);
     const popup=document.getElementById("updatePopup");
+    const backdrop=document.getElementById("popupBackdrop");
     const msg=document.getElementById("updateMessage");
     const closeBtn=document.getElementById("closePopupBtn");
     const updateBtn=document.getElementById("updateNowBtn");
@@ -205,20 +247,26 @@ async function checkForUpdates(){
       msg.innerText="This version of Ethan Browser is no longer supported 😢";
       closeBtn.style.display="none";
       updateBtn.style.display="block";
-      popup.style.display="block";
+      popup.style.display="flex";
+      backdrop.style.display="block";
     } else if(diff>0){
       forcedUpdate=false;
       msg.innerText=data.message||"A new version is available!";
-      closeBtn.style.display="block";
-      updateBtn.style.display="block";
-      popup.style.display="block";
+      closeBtn.style.display="inline-block";
+      updateBtn.style.display="inline-block";
+      popup.style.display="flex";
+      backdrop.style.display="block";
     }
   }catch(e){console.error(e);}
 }
+
 function closeUpdatePopup(){
   if(forcedUpdate){
     document.body.innerHTML="<h2 style='color:white;text-align:center;margin-top:20%'>Unsupported Version 😢</h2>";
-  }else document.getElementById("updatePopup").style.display="none";
+  } else {
+    document.getElementById("updatePopup").style.display="none";
+    document.getElementById("popupBackdrop").style.display="none";
+  }
 }
 function updateNow(){window.location.href=updatePage;}
 function openSettings(){document.getElementById("tabSettings").style.display="flex";}
@@ -290,12 +338,10 @@ function addTab(url=allowedDomain+"/index.html"){
   const tabIndex=tabs.length;
   const tabObj={title:"Tab "+(tabIndex+1),url};
   tabs.push(tabObj);
-
   const tabEl=document.createElement("div");
   tabEl.className="tab";
   tabEl.innerText=tabObj.title;
   tabEl.onclick=()=>switchTab(tabIndex);
-
   tabBar.insertBefore(tabEl,tabBar.lastElementChild);
   switchTab(tabIndex);
 }
