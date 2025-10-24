@@ -6,11 +6,11 @@
 <title>Ethan Browser</title>
 <style>
 :root {
-  --bg: #111;
-  --fg: #fff;
-  --header: rgba(255,255,255,0.05);
-  --tab-bg: rgba(255,255,255,0.12);
-  --tab-active: rgba(255,255,255,0.25);
+  --bg:#111;
+  --fg:#fff;
+  --header:rgba(255,255,255,0.05);
+  --tab-bg:rgba(255,255,255,0.12);
+  --tab-active:rgba(255,255,255,0.25);
 }
 body {
   margin:0;
@@ -20,7 +20,7 @@ body {
   display:flex;
   flex-direction:column;
   height:100vh;
-  transition: background 0.5s ease;
+  transition:background 0.5s ease;
 }
 header {
   display:flex;
@@ -39,28 +39,105 @@ header button {
   cursor:pointer;
 }
 header button:hover { background:rgba(255,255,255,0.2); }
-.tab-bar { display:flex; gap:5px; padding:4px 10px; background:var(--header); backdrop-filter:blur(5px); overflow-x:auto; }
-.tab { padding:4px 10px; border-radius:8px; background:var(--tab-bg); cursor:grab; display:flex; align-items:center; gap:5px; user-select:none; }
+#urlDisplay {
+  flex:1;
+  padding:6px 10px;
+  border-radius:8px;
+  border:none;
+  background:rgba(255,255,255,0.1);
+  color:#ccc;
+  pointer-events:none;
+}
+.tab-bar {
+  display:flex;
+  gap:5px;
+  padding:4px 10px;
+  background:var(--header);
+  backdrop-filter:blur(5px);
+  overflow-x:auto;
+}
+.tab {
+  padding:4px 10px;
+  border-radius:8px;
+  background:var(--tab-bg);
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:5px;
+  user-select:none;
+}
 .tab.active { background:var(--tab-active); }
 .tab .close-btn { color:#aaa; font-weight:bold; cursor:pointer; }
 .tab .close-btn:hover { color:#ff5c5c; }
-iframe { flex:1; border:none; width:100%; }
-footer { text-align:center; padding:4px; font-size:12px; color:#aaa; background:var(--header); }
-#tabSettings { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(30,30,30,0.95); padding:20px; border-radius:12px; display:none; flex-direction:column; gap:10px; min-width:250px; box-shadow:0 0 15px rgba(0,0,0,0.5); z-index:100; }
-#tabSettings input, #tabSettings select { padding:6px; border:none; border-radius:6px; width:100%; }
-#tabSettings button { padding:6px 10px; border:none; border-radius:8px; background:rgba(255,255,255,0.1); color:white; cursor:pointer; }
+iframe {
+  flex:1;
+  border:none;
+  width:100%;
+}
+footer {
+  text-align:center;
+  padding:4px;
+  font-size:12px;
+  color:#aaa;
+  background:var(--header);
+}
+
+/* Settings modal */
+#tabSettings {
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  background:rgba(30,30,30,0.95);
+  padding:20px;
+  border-radius:12px;
+  display:none;
+  flex-direction:column;
+  gap:10px;
+  min-width:250px;
+  box-shadow:0 0 15px rgba(0,0,0,0.5);
+  z-index:100;
+}
+#tabSettings input, #tabSettings select {
+  padding:6px;
+  border:none;
+  border-radius:6px;
+  width:100%;
+}
+#tabSettings button {
+  padding:6px 10px;
+  border:none;
+  border-radius:8px;
+  background:rgba(255,255,255,0.1);
+  color:white;
+  cursor:pointer;
+}
 #tabSettings button:hover { background:rgba(255,255,255,0.2); }
 
 /* Update Popup */
 #updatePopup {
-  position:fixed; bottom:20px; right:20px; background:rgba(255,255,255,0.15);
-  backdrop-filter:blur(10px); padding:15px 20px; border-radius:12px;
-  box-shadow:0 4px 20px rgba(0,0,0,0.4); color:white; font-size:14px;
-  display:none; max-width:300px; z-index:200;
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:rgba(255,255,255,0.15);
+  backdrop-filter:blur(10px);
+  padding:15px 20px;
+  border-radius:12px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.4);
+  color:white;
+  font-size:14px;
+  display:none;
+  max-width:300px;
+  z-index:200;
 }
 #updatePopup button {
-  margin-top:10px; border:none; padding:6px 10px; border-radius:8px;
-  background:rgba(255,255,255,0.2); color:white; cursor:pointer;
+  margin-top:10px;
+  border:none;
+  padding:6px 10px;
+  border-radius:8px;
+  background:rgba(255,255,255,0.2);
+  color:white;
+  cursor:pointer;
 }
 #updatePopup button:hover { background:rgba(255,255,255,0.3); }
 </style>
@@ -71,16 +148,18 @@ footer { text-align:center; padding:4px; font-size:12px; color:#aaa; background:
   <button onclick="goBack()">←</button>
   <button onclick="reloadPage()">⟳</button>
   <button onclick="goHome()">🏠 Home</button>
-  <button onclick="openSettings()">⚙️ Settings</button>
+  <input id="urlDisplay" readonly value="Loading...">
+  <button onclick="openSettings()">⚙️</button>
 </header>
 
 <div class="tab-bar" id="tabBar">
   <button onclick="addTab()">＋</button>
 </div>
 
-<iframe id="browserFrame" src="https://ethanytangcodes.github.io"></iframe>
+<iframe id="browserFrame" src=""></iframe>
 <footer>ethan browser v1.0.1</footer>
 
+<!-- Settings Modal -->
 <div id="tabSettings">
   <h3>Settings</h3>
   <label>Theme:</label>
@@ -97,6 +176,7 @@ footer { text-align:center; padding:4px; font-size:12px; color:#aaa; background:
   <button onclick="closeSettings()">Close</button>
 </div>
 
+<!-- Update Popup -->
 <div id="updatePopup">
   <div id="updateMessage"></div>
   <button id="closePopupBtn" onclick="closeUpdatePopup()">Close</button>
@@ -106,12 +186,17 @@ footer { text-align:center; padding:4px; font-size:12px; color:#aaa; background:
 <script>
 const currentVersion = "1.0.1";
 const workerURL = "https://browserupdate.ethantytang11.workers.dev";
-const updatePage = "https://ethanytangcodes.github.io/download"; // redirect to your new version
+const allowedDomain = "https://ethantytangcodes.github.io";
+const updatePage = allowedDomain + "/download";
 let forcedUpdate = false;
 
-function versionDiff(v1, v2){
-  const a=v1.split('.').map(Number); const b=v2.split('.').map(Number);
-  return (b[0]-a[0])*100 + (b[1]-a[1])*10 + (b[2]-a[2]);
+let tabs = [];
+let currentTabIndex = 0;
+
+function versionDiff(v1,v2){
+  const a=v1.split('.').map(Number);
+  const b=v2.split('.').map(Number);
+  return (b[0]-a[0])*100+(b[1]-a[1])*10+(b[2]-a[2]);
 }
 
 async function checkForUpdates(){
@@ -121,66 +206,94 @@ async function checkForUpdates(){
     const data = await res.json();
     if(data.version){
       const diff = versionDiff(currentVersion,data.version);
-      const popup=document.getElementById("updatePopup");
-      const msgEl=document.getElementById("updateMessage");
-      const closeBtn=document.getElementById("closePopupBtn");
-      const updateBtn=document.getElementById("updateNowBtn");
-
-      if(diff>=20){
-        forcedUpdate=true;
-        msgEl.innerText="Sorry, this version of Ethan Browser is no longer supported 😢";
-        closeBtn.style.display="none";
-        updateBtn.style.display="block";
-        popup.style.display="block";
-      } else if(diff>0){
-        forcedUpdate=false;
-        msgEl.innerText=data.message || "A new version is available!";
-        closeBtn.style.display="block";
-        updateBtn.style.display="block";
-        popup.style.display="block";
-      } else {
-        popup.style.display="none";
+      const popup = document.getElementById("updatePopup");
+      const msg = document.getElementById("updateMessage");
+      const closeBtn = document.getElementById("closePopupBtn");
+      const updateBtn = document.getElementById("updateNowBtn");
+      if(diff >= 20){
+        forcedUpdate = true;
+        msg.innerText = "Sorry, this version of Ethan Browser is no longer supported 😢";
+        closeBtn.style.display = "none";
+        updateBtn.style.display = "block";
+        popup.style.display = "block";
+      } else if(diff > 0){
+        forcedUpdate = false;
+        msg.innerText = data.message || "A new version is available!";
+        closeBtn.style.display = "block";
+        updateBtn.style.display = "block";
+        popup.style.display = "block";
       }
     }
-  } catch(err){ console.log("Update check failed:", err); }
+  }catch(err){ console.log("Update check failed:", err); }
 }
 
 function closeUpdatePopup(){
   if(forcedUpdate){
-    document.body.innerHTML="<h2 style='color:white;text-align:center;margin-top:20%'>This version of Ethan Browser is not supported anymore 😢</h2>";
-  } else {
-    document.getElementById("updatePopup").style.display="none";
-  }
+    document.body.innerHTML = "<h2 style='color:white;text-align:center;margin-top:20%'>This version of Ethan Browser is not supported anymore 😢</h2>";
+  } else document.getElementById("updatePopup").style.display = "none";
 }
+function updateNow(){ window.location.href = updatePage; }
+function openSettings(){ document.getElementById("tabSettings").style.display = "flex"; }
+function closeSettings(){ document.getElementById("tabSettings").style.display = "none"; }
 
-function updateNow(){
-  window.location.href = updatePage;
-}
-
-// Theme + UI
-function openSettings(){ document.getElementById("tabSettings").style.display="flex"; }
-function closeSettings(){ document.getElementById("tabSettings").style.display="none"; }
-function goBack(){ document.getElementById('browserFrame').contentWindow.history.back(); }
-function reloadPage(){ document.getElementById('browserFrame').contentWindow.location.reload(); }
-function goHome(){ document.getElementById('browserFrame').src="https://ethanytangcodes.github.io"; }
 function setTheme(theme){
-  const root=document.documentElement;
-  localStorage.setItem("theme",theme);
+  const root = document.documentElement;
+  localStorage.setItem("theme", theme);
   switch(theme){
-    case"dark":root.style.setProperty("--bg","#111");root.style.setProperty("--header","rgba(255,255,255,0.05)");break;
+    case"dark":root.style.setProperty("--bg","#111");break;
     case"gradient":root.style.setProperty("--bg","linear-gradient(135deg,#ff6ec4,#7873f5)");break;
     case"frosty":root.style.setProperty("--bg","rgba(255,255,255,0.05)");break;
     case"sunset":root.style.setProperty("--bg","linear-gradient(120deg,#ff9966,#ff5e62)");break;
     case"neon":root.style.setProperty("--bg","linear-gradient(135deg,#00f260,#0575e6)");break;
     case"aqua":root.style.setProperty("--bg","linear-gradient(135deg,#00d2ff,#3a7bd5)");break;
     case"fire":root.style.setProperty("--bg","linear-gradient(135deg,#ff416c,#ff4b2b)");break;
-    case"lavender":root.style.setProperty("--bg","linear-gradient(135deg,#e0c3fc,#8ec5fc)");break;
+    case"lavender":root.style.setProperty("--bg","linear-gradient(135deg,#c471ed,#f64f59)");break;
   }
 }
 
-window.onload=()=>{
-  const savedTheme=localStorage.getItem("theme"); if(savedTheme) setTheme(savedTheme);
+function goBack(){ document.getElementById('browserFrame').contentWindow.history.back(); }
+function reloadPage(){ document.getElementById('browserFrame').contentWindow.location.reload(); }
+function goHome(){ loadURL(allowedDomain + "/index.html"); }
+
+function loadURL(url){
+  if(!url.startsWith(allowedDomain)){
+    alert("You can only browse sites under ethantytangcodes.github.io!");
+    return;
+  }
+  tabs[currentTabIndex].url = url;
+  document.getElementById('browserFrame').src = url;
+  document.getElementById('urlDisplay').value = url;
+}
+
+function addTab(url = allowedDomain + "/index.html"){
+  const tabBar = document.getElementById("tabBar");
+  const tabIndex = tabs.length;
+  const tabObj = { title:"Tab " + (tabIndex+1), url };
+  tabs.push(tabObj);
+
+  const tabEl = document.createElement("div");
+  tabEl.className = "tab";
+  tabEl.innerText = tabObj.title;
+  tabEl.onclick = () => switchTab(tabIndex);
+
+  tabBar.insertBefore(tabEl, tabBar.lastElementChild);
+  switchTab(tabIndex);
+}
+
+function switchTab(index){
+  currentTabIndex = index;
+  const tabEls = document.querySelectorAll(".tab");
+  tabEls.forEach((t,i)=>t.classList.toggle("active", i===index));
+  const iframe = document.getElementById('browserFrame');
+  iframe.src = tabs[index].url;
+  document.getElementById('urlDisplay').value = tabs[index].url;
+}
+
+window.onload = () => {
+  const savedTheme = localStorage.getItem("theme");
+  if(savedTheme) setTheme(savedTheme);
   checkForUpdates();
+  addTab();
 };
 </script>
 </body>
