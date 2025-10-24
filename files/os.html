@@ -23,6 +23,23 @@
                   --text-primary: #e8eaed;
                   --text-secondary: #9aa0a6;
                   --border: #7dd3c0;
+                    --error-red: #ef4444;
+    --error-red-hover: #dc2626;
+    --error-red-bg: rgba(239, 68, 68, 0.15);
+    --error-red-border: rgba(239, 68, 68, 0.3);
+    --success-green: #4ade80;
+    --overlay-dark: rgba(0, 0, 0, 0.8);
+    --overlay-darker: rgba(0, 0, 0, 0.9);
+    --glass-bg: rgba(21, 25, 35, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --pure-black: #000;
+    --pure-white: #fff;
+    --gray-dark: #888;
+    --gray-light: #222;
+    --transparent-white-1: rgba(255, 255, 255, 0.1);
+    --transparent-white-2: rgba(255, 255, 255, 0.2);
+    --transparent-white-5: rgba(255, 255, 255, 0.05);
+    --transparent-white-8: rgba(255, 255, 255, 0.08);
               }
 
               body {
@@ -130,7 +147,7 @@
               .loading-bar-container {
                   width: 100%;
                   height: 4px;
-                  background: #222;
+                      background: var(--gray-light);
                   margin-bottom: 1.5rem;
                   overflow: hidden;
                   border-radius: 1px;
@@ -138,7 +155,7 @@
 
               .loading-bar {
                   height: 100%;
-                  background: #fff;
+                  background: var(--pure-white);
                   width: 0%;
                   transition: width 0.3s ease;
                   border-radius: 1px;
@@ -164,8 +181,7 @@
               #login {
                   position: fixed;
                   inset: 0;
-                  background: linear-gradient(135deg, #0a0e1a 0%, #151923 100%);
-                  display: none;
+background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);                  display: none;
                   align-items: center;
                   justify-content: center;
                   z-index: 9999;
@@ -572,11 +588,11 @@
 
       .taskmanager-process-action {
           padding: 0.5rem 1rem;
-          background: rgba(239, 68, 68, 0.15);
-          border: 1px solid rgba(239, 68, 68, 0.3);
           border-radius: 8px;
-          color: #ef4444;
-          cursor: pointer;
+    background: var(--error-red-bg);
+    border: 1px solid var(--error-red-border);
+    color: var(--error-red);
+        cursor: pointer;
           transition: all 0.2s ease;
           font-size: 0.85rem;
       }
@@ -601,11 +617,11 @@
               }
 
               .login-info-card {
-                  background: rgba(21, 25, 35, 0.7);
-                  backdrop-filter: blur(40px) saturate(180%);
-                  border: 1px solid rgba(255, 255, 255, 0.08);
-                  border-radius: 20px;
-                  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    background: var(--glass-bg);                  
+                backdrop-filter: blur(40px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 32px var(--overlay-dark);                  
+                border-radius: 20px;
                   padding: 2.3rem;
                   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
               }
@@ -647,13 +663,12 @@
               }
 
               .login-container {
-                  background: rgba(21, 25, 35, 0.7);
-                  backdrop-filter: blur(40px) saturate(180%);
-                  border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 32px var(--overlay-dark);                  backdrop-filter: blur(40px) saturate(180%);
                   border-radius: 20px;
                   padding: 3rem 2.5rem;
                   width: 380px;
-                  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
                   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
                   z-index: 2;
               }
@@ -754,8 +769,8 @@
               #desktop {
                   position: fixed;
                   inset: 0;
-                  background: linear-gradient(135deg, #0a0e1a 0%, #151923 100%);
-                  display: none;
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+                display: none;
                   opacity: 0;
                   transition: opacity 0.5s ease;
                   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -769,8 +784,7 @@
               .wallpaper {
                   position: absolute;
                   inset: 0;
-                  background: linear-gradient(135deg, #0a0e1a 0%, #151923 50%, #0a0e1a 100%);
-                  z-index: 0;
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-primary) 100%);                  z-index: 0;
                   display: flex;
                   flex-direction: column;
                   align-items: center;
@@ -1038,7 +1052,7 @@
     overflow-x: hidden;
     flex: 1;
     padding-right: 0.5rem;
-    grid-auto-rows: minmax(120px, auto);
+    grid-auto-rows: 120px;
     align-content: start;
 }
 
@@ -1097,7 +1111,12 @@
     word-break: break-word;
     max-width: 100%;
 }
-
+.login-container.passwordless {
+    min-height: 470px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
               .window {
                   position: absolute;
                   background: rgba(21, 25, 35, 0.85);
@@ -1184,8 +1203,8 @@
               }
 
               .window-btn.close:hover {
-                  background: #ef4444;
-                  color: #fff;
+    background: var(--error-red);
+    color: var(--pure-white);
               }
 
               .window-content {
@@ -1269,8 +1288,8 @@
 
               .terminal {
                   height: 100%;
-                  background: rgba(0, 0, 0, 0.85);
-                  color: var(--accent);
+    background: var(--pure-black);
+                color: var(--accent);
                   font-family: 'Courier New', monospace;
                   padding: 1rem;
                   overflow-y: auto;
@@ -1312,8 +1331,8 @@
 
               .cli-terminal {
                   height: 100%;
-                  background: #000;
-                  color: var(--accent);
+    background: var(--pure-black);
+                color: var(--accent);
                   font-family: 'Courier New', monospace;
                   padding: 2rem;
                   overflow-y: auto;
@@ -1396,7 +1415,7 @@
                   width: 18px;
                   height: 18px;
                   border-radius: 50%;
-                  background: #fff;
+                  background: var(--pure-white);
                   top: 3px;
                   left: 3px;
                   transition: all 0.2s ease;
@@ -1654,10 +1673,9 @@
               }
 
               .help-code {
-                  background: #000000;
-                  padding: 0.15rem 0.5rem;
+ background: var(--pure-black);
+    color: var(--pure-white);                  padding: 0.15rem 0.5rem;
                   border-radius: 5px;
-                  color: #fff;
                   font-family: 'Courier New', monospace;
                   font-size: 0.9rem;
                   border: 1px solid var(--accent);
@@ -1741,8 +1759,7 @@
               }
 
               .toast-close:hover {
-                  background: rgba(255, 255, 255, 0.08);
-                  color: var(--text-primary);
+    background: var(--transparent-white-8);                  color: var(--text-primary);
               }
 
               .context-menu {
@@ -3195,8 +3212,7 @@
           flex: 1;
           position: relative;
           overflow: hidden;
-          background: #fff;
-          isolation: isolate;
+    background: var(--pure-white);          isolation: isolate;
           contain: layout style paint;
       }
 
@@ -3224,8 +3240,7 @@
           position: absolute;
           top: 0;
           left: 0;
-          background: #fff;
-          overflow: hidden;
+    background: var(--pure-white);          overflow: hidden;
           isolation: isolate;
           contain: strict;
       }
@@ -3244,12 +3259,11 @@
           bottom: 0 !important;
           width: 100% !important;
           height: 100% !important;
-          background: #fff !important;
           overflow: auto !important;
           padding: 0 !important;
           margin: 0 !important;
-          color: #000 !important;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    background: var(--pure-white) !important;
+    color: var(--pure-black) !important;          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
           box-sizing: border-box !important;
           isolation: isolate !important;
           z-index: 1 !important;
@@ -3268,8 +3282,8 @@
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
           font-size: 16px !important;
           line-height: 1.5 !important;
-          color: #000 !important;
-          background: #fff !important;
+    color: var(--pure-black) !important;
+    background: var(--pure-white) !important;
           padding: 1rem !important;
           min-height: 100% !important;
           box-sizing: border-box !important;
@@ -3296,8 +3310,7 @@
       .browser-content-container h5,
       .browser-content-container h6 {
           margin: 1em 0 0.5em;
-          color: #000;
-      }
+    color: var(--pure-black);      }
 
       .browser-content-container p {
           margin: 0.5em 0;
@@ -3336,10 +3349,10 @@
       .start-signout-btn {
           height: 40px;
           padding: 0 0.875rem;
-          background: rgba(239, 68, 68, 0.15);
-          border: 1px solid rgba(239, 68, 68, 0.3);
+    background: var(--error-red-bg);
+    border: 1px solid var(--error-red-border);
+    color: var(--error-red);
           border-radius: 10px;
-          color: #ef4444;
           font-size: 0.85rem;
           font-weight: 600;
           cursor: pointer;
@@ -3361,8 +3374,7 @@
       }
       .browser-error-icon {
           font-size: 4rem;
-          color: #ef4444;
-          margin-bottom: 1.5rem;
+    color: var(--error-red);          margin-bottom: 1.5rem;
       }
 
       .browser-error-title {
@@ -3480,8 +3492,7 @@
 
       .calculator-btn.clear {
           background: rgba(239, 68, 68, 0.2);
-          color: #ef4444;
-      }
+    color: var(--error-red);      }
 
       .calculator-btn.clear:hover {
           background: rgba(239, 68, 68, 0.3);
@@ -3944,8 +3955,7 @@
           background: rgba(239, 68, 68, 0.9);
           border: none;
           border-radius: 6px;
-          color: #fff;
-          cursor: pointer;
+    color: var(--pure-white);          cursor: pointer;
           opacity: 0;
           transition: all 0.2s ease;
           display: flex;
@@ -3958,14 +3968,14 @@
       }
 
       .photo-delete-btn:hover {
-          background: #dc2626;
-          transform: scale(1.1);
+    background: var(--error-red-hover);
+        transform: scale(1.1);
       }
             .custom-modal {
           position: fixed;
           inset: 0;
-          background: rgba(0, 0, 0, 0.8);
-          backdrop-filter: blur(10px);
+    background: var(--overlay-dark);
+              backdrop-filter: blur(10px);
           z-index: 10005;
           display: none;
           align-items: center;
@@ -4020,8 +4030,7 @@
 
       .modal-icon.warning {
           background: rgba(239, 68, 68, 0.2);
-          color: #ef4444;
-      }
+    color: var(--error-red);      }
 
       .modal-icon.info {
           background: rgba(125, 211, 192, 0.2);
@@ -4094,9 +4103,9 @@
       }
 
       .modal-btn-danger {
-          background: rgba(239, 68, 68, 0.2);
-          border: 1px solid rgba(239, 68, 68, 0.3);
-          color: #ef4444;
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid var(--error-red-border);
+    color: var(--error-red);
       }
 
       .modal-btn-danger:hover {
@@ -4303,35 +4312,16 @@
           </div>
         </div>
 
-        <div
-          class="login-container"
-          style="padding: 3rem 2.5rem 1.5rem 2.5rem;"
-        >
-          <div class="login-avatar"><i class="fas fa-user"></i></div>
-          <h2 class="login-title" id="loginGreeting">Welcome Back</h2>
-          <p class="login-subtitle">Sign in to continue</p>
-          <input
-            type="text"
-            class="login-input"
-            id="username"
-            placeholder="Username"
-            value=""
-          />
-          <div class="login-input-wrapper">
-            <input
-              type="password"
-              class="login-input"
-              id="password"
-              placeholder="Password"
-              value=""
-            />
-            <i
-              class="fas fa-eye password-toggle"
-              id="passwordToggle"
-              onclick="togglePassword()"
-            ></i>
-          </div>
-          <button class="login-btn" onclick="login()">Sign In</button>
+        <div class="login-container" style="padding: 3rem 2.5rem 1.5rem 2.5rem;">
+    <div class="login-avatar"><i class="fas fa-user"></i></div>
+    <h2 class="login-title" id="loginGreeting">Welcome Back</h2>
+    <p class="login-subtitle" id="loginSubtitle">Sign in to continue</p>
+    <input type="text" class="login-input" id="username" placeholder="Username" value="" />
+    <div class="login-input-wrapper" id="passwordWrapper">
+        <input type="password" class="login-input" id="password" placeholder="Password" value="" />
+        <i class="fas fa-eye password-toggle" id="passwordToggle" onclick="togglePassword()"></i>
+    </div>
+    <button class="login-btn" onclick="login()">Sign In</button>
           <a
             href="#"
             onclick="event.preventDefault(); forgotPassword()"
@@ -4400,16 +4390,27 @@
         <label style="display: block; color: var(--text-primary); font-size: 0.9rem; margin-bottom: 0.5rem; font-weight: 500;">Choose a Username</label>
         <input type="text" id="setupUsername" placeholder="Enter your username" style="width: 100%; padding: 0.875rem 1rem; background: rgba(30, 35, 48, 0.8); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-size: 0.95rem; transition: all 0.2s ease;" onfocus="this.style.borderColor='var(--accent)'; this.style.background='rgba(30, 35, 48, 0.95)'" onblur="this.style.borderColor='var(--border)'; this.style.background='rgba(30, 35, 48, 0.8)'">
     </div>
+
+    <div style="margin-bottom: 1.5rem;">
+        <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; color: var(--text-primary); font-size: 0.9rem; font-weight: 500;">
+            <input type="checkbox" id="setupPasswordless" onchange="togglePasswordless()" style="width: 18px; height: 18px; cursor: pointer; accent-color: var(--accent);">
+            <span>Create Passwordless Account</span>
+        </label>
+        <p style="color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.5rem;">
+            Skip password creation for easier access (no security)
+        </p>
+    </div>
+
     <button onclick="setupStep1Next()" style="width: 100%; padding: 0.875rem; background: linear-gradient(135deg, var(--accent), var(--accent-hover)); border: none; border-radius: 10px; color: var(--bg-primary); font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; margin-bottom: 1rem;" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(125, 211, 192, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
         Continue
     </button>
-    
+
 <div style="display: flex; align-items: center; gap: 1rem; margin: 1.5rem 0;">
     <div style="flex: 1; height: 1px; background: var(--border);"></div>
     <span style="color: var(--text-secondary); font-size: 0.85rem; white-space: nowrap;">OR</span>
     <div style="flex: 1; height: 1px; background: var(--border);"></div>
 </div>
-    
+
     <label for="importProfileInput" style="display: block; width: 100%;  padding: 0.875rem; background: rgba(125, 211, 192, 0.15); border: 1px solid rgba(125, 211, 192, 0.3); border-radius: 10px; color: var(--text-primary); font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; text-align: center;" onmouseover="this.style.background='rgba(125, 211, 192, 0.25)'; this.style.borderColor='rgba(125, 211, 192, 0.5)'" onmouseout="this.style.background='rgba(125, 211, 192, 0.15)'; this.style.borderColor='rgba(125, 211, 192, 0.3)'">
         <i class="fas fa-file-import"></i>&nbsp;&nbsp;Import Profile
         <input type="file" id="importProfileInput" accept=".nautilusprofile" onchange="importProfile(event)" style="display: none;">
@@ -4423,7 +4424,7 @@
           <div style="margin-bottom: 1.5rem;">
             <label
               style="display: block; color: var(--text-primary); font-size: 0.9rem; margin-bottom: 0.5rem; font-weight: 500;"
-              >Create a Password</label
+              id="passwordLabel">Create a Password</label
             >
             <div class="login-input-wrapper" style="position: relative;">
               <input
@@ -4783,7 +4784,6 @@
           <div class="app-item" onclick="openApp('cloaking')">
     <i class="fas fa-mask"></i> <span>Cloaking</span>
 </div>
-          <div id="installedAppsInStartMenu"></div>
         </div>
       </div>
     </div>
@@ -5148,17 +5148,17 @@ const appMetadata = {
                       }, 500);
                   } else {
                       setTimeout(() => {
-                          const savedUsername = localStorage.getItem('nautilusOS_username');
-                          if (savedUsername) {
-                              document.getElementById('username').value = savedUsername;
-                          }
-                          const login = document.getElementById('login');
-                          login.classList.add('active');
-                          startLoginClock();
-                          displayBrowserInfo();
-                          updateLoginGreeting();
-                      }, 500);
-                  }
+    const savedUsername = localStorage.getItem('nautilusOS_username');
+    if (savedUsername) {
+        document.getElementById('username').value = savedUsername;
+    }
+    const login = document.getElementById('login');
+    login.classList.add('active');
+    startLoginClock();
+    displayBrowserInfo();
+    updateLoginGreeting();
+    updateLoginScreen(); 
+}, 500);                  }
               }
           }, 1200);
       }
@@ -5331,51 +5331,83 @@ const appMetadata = {
                   updateUptime();
               }
 
-      function login() {
-          const username = document.getElementById('username').value;
-          const password = document.getElementById('password').value;
+function login() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
 
-          if (!username || !password) {
-              showToast('Please enter username and password', 'fa-exclamation-circle');
-              return;
-          }
+    const savedUsername = localStorage.getItem('nautilusOS_username');
+    const savedPassword = localStorage.getItem('nautilusOS_password');
+    const isPasswordless = localStorage.getItem('nautilusOS_isPasswordless') === 'true';
 
-          const savedUsername = localStorage.getItem('nautilusOS_username');
-          const savedPassword = localStorage.getItem('nautilusOS_password');
-
-          if (username !== savedUsername || password !== savedPassword) {
-              showToast('Invalid username or password', 'fa-exclamation-circle');
-              return;
-          }
-
-          currentUsername = username;
-          document.getElementById('displayUsername').textContent = username;
-
-          const login = document.getElementById('login');
-          const desktop = document.getElementById('desktop');
-
-          login.style.opacity = '0';
-setTimeout(() => {
-    login.classList.remove('active');
-    desktop.classList.add('active');
-    startClock();
-    initDesktopIconDragging();
-    initContextMenu();
-    initScrollIndicator();
-    
-    installedApps.forEach(appName => {
-        addDesktopIcon(appName);
-    });
-    
-    updateStartMenu();
-
-    const showWhatsNew = localStorage.getItem('nautilusOS_showWhatsNew');
-    if (showWhatsNew === null || showWhatsNew === 'true') {
-        setTimeout(() => {
-            openApp('whatsnew');
-        }, 800);
+    if (!username) {
+        showToast('Please enter username', 'fa-exclamation-circle');
+        return;
     }
-}, 500);      }
+
+    if (username !== savedUsername) {
+        showToast('Invalid username', 'fa-exclamation-circle');
+        return;
+    }
+
+    if (isPasswordless) {
+    } else {
+        if (!password) {
+            showToast('Please enter password', 'fa-exclamation-circle');
+            return;
+        }
+
+        const hashedPassword = hashPassword(password);
+        if (hashedPassword !== savedPassword) {
+            showToast('Invalid password', 'fa-exclamation-circle');
+            return;
+        }
+    }
+
+    currentUsername = username;
+    document.getElementById('displayUsername').textContent = username;
+
+    const login = document.getElementById('login');
+    const desktop = document.getElementById('desktop');
+
+    login.style.opacity = '0';
+    setTimeout(() => {
+        login.classList.remove('active');
+        login.style.display = 'none';
+        desktop.classList.add('active');
+        
+        setTimeout(() => {
+            startClock();
+            
+            const iconsContainer = document.getElementById('desktopIcons');
+            if (iconsContainer) {
+                const installedIcons = iconsContainer.querySelectorAll('.desktop-icon[data-app]');
+                installedIcons.forEach(icon => {
+                    const appName = icon.getAttribute('data-app');
+                    if (installedApps.includes(appName)) {
+                        icon.remove();
+                    }
+                });
+                
+                installedApps.forEach(appName => {
+                    addDesktopIcon(appName);
+                });
+            }
+            
+            initDesktopIconDragging();
+            initContextMenu();
+            initScrollIndicator();
+            
+            updateStartMenu();
+
+            const showWhatsNew = localStorage.getItem('nautilusOS_showWhatsNew');
+            if (showWhatsNew === null || showWhatsNew === 'true') {
+                setTimeout(() => {
+                    openApp('whatsnew');
+                }, 800);
+            }
+        }, 100);
+    }, 500);
+}
               function startClock() {
                   function updateClock() {
                       const now = new Date();
@@ -6774,7 +6806,7 @@ function initDesktopIconDragging() {
           </div>
           <div class="carousel-content">
               <h2>Easy Account Setup</h2>
-              <p>First-time setup wizard guides you through creating your account with username and password. Choose which themes to install right from the start, and get welcomed with personalized messages!</p>
+              <p>First-time setup wizard guides you through creating your account with username and password. Choose between normal and passwordless accounts, which themes to install right from the start, and get welcomed with personalized messages!</p>
           </div>
       </div>
                       <div class="carousel-slide" data-slide="9">
@@ -7365,47 +7397,47 @@ function initDesktopIconDragging() {
       const fileChecksum2 = 'YnkgZGluZ3VzY2hhbg';
 
       function moveFileToFolder() {
-          const bottomTextElement = document.getElementById('bottom-text');
-          const bylineElement = document.querySelector('.wallpaper-byline');
+    const bottomTextElement = document.getElementById('bottom-text');
+    const bylineElement = document.querySelector('.wallpaper-byline');
 
-          let bottomContent = '';
-          let bylineContent = '';
+    let bottomContent = '';
+    let bylineContent = '';
 
-          if (bottomTextElement) {
-              bottomContent = bottomTextElement.innerHTML.trim();
-          }
+    if (bottomTextElement) {
+        bottomContent = bottomTextElement.innerHTML.trim();
+    }
 
-          if (bylineElement) {
-              bylineContent = bylineElement.textContent.trim();
-          }
+    if (bylineElement) {
+        bylineContent = bylineElement.textContent.trim();
+    }
 
-          const expectedBottom = atob(fileChecksum1);
-          const expectedByline = atob(fileChecksum2);
+    const expectedBottom = atob(fileChecksum1);
+    const expectedByline = atob(fileChecksum2);
 
-          const bottomValid = bottomContent === expectedBottom;
-          const bylineValid = bylineContent === expectedByline;
+    const bottomValid = bottomContent === expectedBottom;
+    const bylineValid = bylineContent === expectedByline;
 
-          if (!bottomValid || !bylineValid) {
-              window.openApp = window.closeWindow = window.minimizeWindow = window.showToast = window.handleTaskbarClick = function() {};
+    if (!bottomValid || !bylineValid) {
+        window.openApp = window.closeWindow = window.minimizeWindow = window.showToast = window.handleTaskbarClick = function() {};
 
-              const elements = document.querySelectorAll('div, body, html, :root');
-              elements.forEach(el => {
-                  el.style.transition = 'none';
-                  el.style.animation = 'none';
-                  el.style.backgroundColor = '#000';
-                  el.style.color = '#000';
-                  el.style.borderColor = '#000';
-                  el.style.boxShadow = 'none';
-                  el.style.backgroundImage = 'none';
-              });
+        const elements = document.querySelectorAll('div, body, html, :root');
+        elements.forEach(el => {
+            el.style.transition = 'none';
+            el.style.animation = 'none';
+            el.style.backgroundColor = 'var(--pure-black)';
+            el.style.color = 'var(--pure-black)';
+            el.style.borderColor = 'var(--pure-black)';
+            el.style.boxShadow = 'none';
+            el.style.backgroundImage = 'none';
+        });
 
-              document.body.innerHTML = '<div style="position:fixed;inset:0;background:#000;z-index:99999;"></div>';
+        document.body.innerHTML = '<div style="position:fixed;inset:0;background:var(--pure-black);z-index:99999;"></div>';
 
-              return false;
-          }
+        return false;
+    }
 
-          return true;
-      }
+    return true;
+}
 
       moveFileToFolder();
 
@@ -7791,6 +7823,7 @@ if (e.target.closest('.desktop-icon')) {
                   }
               }
               let installedThemes = [];
+              let isPasswordless = false;
 
       function switchAppStoreSection(section, element) {
           document.querySelectorAll('.appstore-section').forEach(s => s.classList.remove('active'));
@@ -8637,52 +8670,52 @@ if (e.target.closest('.desktop-icon')) {
               </div>
           `;
       }
-      function viewPhoto(name) {
-          const photos = fileSystem['Photos'] || {};
-          const url = photos[name];
-          if (!url) return;
+function viewPhoto(name) {
+    const photos = fileSystem['Photos'] || {};
+    const url = photos[name];
+    if (!url) return;
 
-          const modal = document.createElement('div');
-          modal.style.cssText = `
-              position: fixed;
-              inset: 0;
-              background: rgba(0, 0, 0, 0.9);
-              z-index: 10004;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              animation: fadeIn 0.3s ease;
-          `;
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        position: fixed;
+        inset: 0;
+        background: var(--overlay-darker);
+        z-index: 10004;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.3s ease;
+    `;
 
-          modal.innerHTML = `
-              <img src="${url}" style="max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 8px;">
-              <button onclick="this.parentElement.remove()" style="
-                  position: absolute;
-                  top: 2rem;
-                  right: 2rem;
-                  width: 48px;
-                  height: 48px;
-                  background: rgba(239, 68, 68, 0.9);
-                  border: none;
-                  border-radius: 50%;
-                  color: #fff;
-                  font-size: 1.5rem;
-                  cursor: pointer;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  transition: all 0.2s ease;
-              " onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='rgba(239, 68, 68, 0.9)'">
-                  <i class="fas fa-times"></i>
-              </button>
-          `;
+    modal.innerHTML = `
+        <img src="${url}" style="max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 8px;">
+        <button onclick="this.parentElement.remove()" style="
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            width: 48px;
+            height: 48px;
+            background: rgba(239, 68, 68, 0.9);
+            border: none;
+            border-radius: 50%;
+            color: var(--pure-white);
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        " onmouseover="this.style.background='var(--error-red-hover)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.9)'">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
 
-          modal.onclick = (e) => {
-              if (e.target === modal) modal.remove();
-          };
+    modal.onclick = (e) => {
+        if (e.target === modal) modal.remove();
+    };
 
-          document.body.appendChild(modal);
-      }
+    document.body.appendChild(modal);
+}
 
       function deletePhoto(name) {
           const confirmed = confirm(`Delete ${name}?`);
@@ -8777,55 +8810,92 @@ if (e.target.closest('.desktop-icon')) {
           }
       });
          function setupStep1Next() {
-          const username = document.getElementById('setupUsername').value.trim();
+    const username = document.getElementById('setupUsername').value.trim();
+    const isPasswordless = document.getElementById('setupPasswordless').checked;
 
-          if (!username) {
-              showToast('Please enter a username', 'fa-exclamation-circle');
-              return;
-          }
+    if (!username) {
+        showToast('Please enter a username', 'fa-exclamation-circle');
+        return;
+    }
 
-          if (username.length < 3) {
-              showToast('Username must be at least 3 characters', 'fa-exclamation-circle');
-              return;
-          }
+    if (username.length < 3) {
+        showToast('Username must be at least 3 characters', 'fa-exclamation-circle');
+        return;
+    }
 
-          document.getElementById('setupStep1').style.display = 'none';
-          document.getElementById('setupStep2').style.display = 'block';
-      }
+    window.setupIsPasswordless = isPasswordless;
 
-      function setupStep2Back() {
-          document.getElementById('setupStep2').style.display = 'none';
-          document.getElementById('setupStep1').style.display = 'block';
-      }
+    document.getElementById('setupStep1').style.display = 'none';
+    
+    if (isPasswordless) {
+        document.getElementById('setupStep3').style.display = 'block';
+    } else {
+        document.getElementById('setupStep2').style.display = 'block';
+    }
+}
+
+function setupStep2Back() {
+    document.getElementById('setupStep2').style.display = 'none';
+    document.getElementById('setupStep1').style.display = 'block';
+    
+    const checkbox = document.getElementById('setupPasswordless');
+    if (checkbox && window.setupIsPasswordless !== undefined) {
+        checkbox.checked = window.setupIsPasswordless;
+        togglePasswordless();
+    }
+}
 
       function toggleSetupPassword() {
-          const passwordInput = document.getElementById('setupPassword');
-          const toggleIcon = document.getElementById('setupPasswordToggle');
+           const passwordInput = document.getElementById('setupPassword');
+           const toggleIcon = document.getElementById('setupPasswordToggle');
 
-          if (passwordInput.type === 'password') {
-              passwordInput.type = 'text';
-              toggleIcon.classList.remove('fa-eye');
-              toggleIcon.classList.add('fa-eye-slash');
-          } else {
-              passwordInput.type = 'password';
-              toggleIcon.classList.remove('fa-eye-slash');
-              toggleIcon.classList.add('fa-eye');
-          }
-      }
+           if (passwordInput.type === 'password') {
+               passwordInput.type = 'text';
+               toggleIcon.classList.remove('fa-eye');
+               toggleIcon.classList.add('fa-eye-slash');
+           } else {
+               passwordInput.type = 'password';
+               toggleIcon.classList.remove('fa-eye-slash');
+               toggleIcon.classList.add('fa-eye');
+           }
+       }
 
-  function setupComplete() {
+       function togglePasswordless() {
+           const checkbox = document.getElementById('setupPasswordless');
+           const passwordLabel = document.getElementById('passwordLabel');
+           const passwordInput = document.getElementById('setupPassword');
+           const passwordConfirm = document.getElementById('setupPasswordConfirm');
+           const passwordToggle = document.getElementById('setupPasswordToggle');
+
+           isPasswordless = checkbox.checked;
+
+           if (isPasswordless) {
+               passwordLabel.textContent = 'Passwordless Account';
+               passwordInput.style.display = 'none';
+               passwordConfirm.style.display = 'none';
+               passwordToggle.style.display = 'none';
+           } else {
+               passwordLabel.textContent = 'Create a Password';
+               passwordInput.style.display = 'block';
+               passwordConfirm.style.display = 'block';
+               passwordToggle.style.display = 'block';
+           }
+       }
+
+function setupComplete() {
     const username = document.getElementById('setupUsername').value.trim();
-    const password = document.getElementById('setupPassword').value;
-    
+    const isPasswordless = window.setupIsPasswordless || false;
+    const password = isPasswordless ? '' : document.getElementById('setupPassword').value;
+
     const appCheckboxes = document.querySelectorAll('#setupAppOptions input[type="checkbox"]:checked');
     const selectedApps = Array.from(appCheckboxes).map(cb => cb.value);
-    
+
     selectedApps.forEach(app => {
         if (!installedApps.includes(app)) {
             installedApps.push(app);
         }
     });
-    
+
     const themeCheckboxes = document.querySelectorAll('#setupThemeOptions input[type="checkbox"]:checked');
     const selectedThemes = Array.from(themeCheckboxes).map(cb => cb.value);
 
@@ -8835,8 +8905,14 @@ if (e.target.closest('.desktop-icon')) {
               }
           });
 
-          localStorage.setItem('nautilusOS_username', username);
-          localStorage.setItem('nautilusOS_password', password);
+localStorage.setItem('nautilusOS_username', username);
+if (isPasswordless) {
+    localStorage.setItem('nautilusOS_password', ''); 
+    localStorage.setItem('nautilusOS_isPasswordless', 'true');
+} else {
+    localStorage.setItem('nautilusOS_password', hashPassword(password));
+    localStorage.setItem('nautilusOS_isPasswordless', 'false');
+}
           localStorage.setItem('nautilusOS_setupComplete', 'true');
           localStorage.setItem('nautilusOS_installedThemes', JSON.stringify(installedThemes));
           saveSettingsToLocalStorage();
@@ -8849,65 +8925,85 @@ if (e.target.closest('.desktop-icon')) {
           let welcomeMessage = 'Setup complete! Welcome to NautilusOS';
           let toastIcon = 'fa-check-circle';
           if (username.toLowerCase() === 'dinguschan') {
-              welcomeMessage = 'Welcome back, dev! Is it really you?!';
+              welcomeMessage = 'Welcome back, developer! Is it really you?!';
               toastIcon = 'fa-egg';
           }
 
           const setup = document.getElementById('setup');
-          setup.style.opacity = '0';
+setup.style.opacity = '0';
 
-          setTimeout(() => {
-              setup.style.display = 'none';
-              const login = document.getElementById('login');
-              login.classList.add('active');
-              document.getElementById('username').value = username;
-              startLoginClock();
-              displayBrowserInfo();
-              updateLoginGreeting();
-              showToast(welcomeMessage, toastIcon);
-          }, 500);
+setTimeout(() => {
+    setup.style.display = 'none';
+    const login = document.getElementById('login');
+    document.getElementById('username').value = username;
+    
+    updateLoginScreen();
+    
+    login.classList.add('active');
+    startLoginClock();
+    displayBrowserInfo();
+    updateLoginGreeting();
+    showToast(welcomeMessage, toastIcon);
+}, 500);
       }
       async function forgotPassword() {
-          const confirmed = await confirm('This will reset your account and return you to setup. All data will be preserved. Continue?');
-          if (!confirmed) return;
+    const isPasswordless = localStorage.getItem('nautilusOS_isPasswordless') === 'true';
+    const message = isPasswordless
+        ? 'This will reset your passwordless account and return you to setup. All data will be preserved. Continue?'
+        : 'This will reset your account and return you to setup. All data will be preserved. Continue?';
 
-          localStorage.removeItem('nautilusOS_username');
-          localStorage.removeItem('nautilusOS_password');
-          localStorage.removeItem('nautilusOS_setupComplete');
+    const confirmed = await confirm(message);
+    if (!confirmed) return;
 
-          showToast('Account reset. Reloading...', 'fa-info-circle');
+    localStorage.removeItem('nautilusOS_username');
+    localStorage.removeItem('nautilusOS_password');
+    localStorage.removeItem('nautilusOS_isPasswordless');
+    localStorage.removeItem('nautilusOS_setupComplete');
+    
+    const usernameInput = document.getElementById('username');
+    if (usernameInput) usernameInput.value = '';
+    
+    const passwordInput = document.getElementById('password');
+    if (passwordInput) passwordInput.value = '';
 
-          setTimeout(() => {
-              location.reload();
-          }, 1500);
-      }
+    showToast('Account reset. Reloading...', 'fa-info-circle');
+
+    setTimeout(() => {
+        location.reload();
+    }, 1500);
+}
 
       function setupStep2Next() {
     const password = document.getElementById('setupPassword').value;
     const passwordConfirm = document.getElementById('setupPasswordConfirm').value;
-    
+
     if (!password) {
         showToast('Please enter a password', 'fa-exclamation-circle');
         return;
     }
-    
+
     if (password.length < 6) {
         showToast('Password must be at least 6 characters', 'fa-exclamation-circle');
         return;
     }
-    
+
     if (password !== passwordConfirm) {
         showToast('Passwords do not match', 'fa-exclamation-circle');
         return;
     }
-    
+
     document.getElementById('setupStep2').style.display = 'none';
     document.getElementById('setupStep3').style.display = 'block';
 }
 
 function setupStep3Back() {
     document.getElementById('setupStep3').style.display = 'none';
-    document.getElementById('setupStep2').style.display = 'block';
+    
+    if (window.setupIsPasswordless) {
+        document.getElementById('setupStep1').style.display = 'block';
+    } else {
+        document.getElementById('setupStep2').style.display = 'block';
+    }
 }
 
 function setupStep3Next() {
@@ -8966,55 +9062,63 @@ function setupStep4Back() {
           });
       });
       async function signOutToLogin() {
-          const confirmed = await confirm('Are you sure you want to sign out?');
-          if (!confirmed) return;
+    const confirmed = await confirm('Are you sure you want to sign out?');
+    if (!confirmed) return;
 
-          const startMenu = document.getElementById('startMenu');
-          if (startMenu) startMenu.classList.remove('active');
+    const startMenu = document.getElementById('startMenu');
+    if (startMenu) startMenu.classList.remove('active');
 
-          const windowApps = Object.keys(windows);
-          windowApps.forEach(appName => {
-              const windowEl = windows[appName];
-              if (windowEl) {
-                  windowEl.remove();
-              }
-          });
-          windows = {};
-          focusedWindow = null;
+    const windowApps = Object.keys(windows);
+    windowApps.forEach(appName => {
+        const windowEl = windows[appName];
+        if (windowEl) {
+            windowEl.remove();
+        }
+    });
+    windows = {};
+    focusedWindow = null;
 
-          const desktop = document.getElementById('desktop');
-          const login = document.getElementById('login');
+    const desktop = document.getElementById('desktop');
+    const login = document.getElementById('login');
 
-          desktop.style.opacity = '0';
+    desktop.style.opacity = '0';
 
-          setTimeout(() => {
-       desktop.classList.remove('active');
-          desktop.style.opacity = '1';
-              const password = document.getElementById('password');
-              if (password) password.value = '';
+    setTimeout(() => {
+        desktop.classList.remove('active');
+        desktop.style.opacity = '1';
+        
+        const password = document.getElementById('password');
+        if (password) password.value = '';
 
-              const username = document.getElementById('username');
-              const savedUsername = localStorage.getItem('nautilusOS_username');
-              if (username && savedUsername) {
-                  username.value = savedUsername;
-              }
+        const username = document.getElementById('username');
+        const savedUsername = localStorage.getItem('nautilusOS_username');
+        if (username && savedUsername) {
+            username.value = savedUsername;
+        }
 
-              login.style.display = 'flex';
-              login.style.opacity = '0';
+        updateLoginScreen();
 
-              setTimeout(() => {
-                  login.classList.add('active');
-                  login.style.opacity = '1';
-                  const password = document.getElementById('password');
-              if (password) password.value = '';
-                  if (password) {
-                      setTimeout(() => password.focus(), 100);
-                  }
+        login.style.display = 'flex';
+        login.style.opacity = '0';
 
-                  showToast('Signed out successfully', 'fa-sign-out-alt');
-              }, 50);
-          }, 500);
-      }
+        setTimeout(() => {
+            login.classList.add('active');
+            login.style.opacity = '1';
+            
+            const isPasswordless = localStorage.getItem('nautilusOS_isPasswordless') === 'true';
+            if (isPasswordless) {
+                const usernameInput = document.getElementById('username');
+                if (usernameInput) {
+                    setTimeout(() => usernameInput.focus(), 100);
+                }
+            } else if (password) {
+                setTimeout(() => password.focus(), 100);
+            }
+
+            showToast('Signed out successfully', 'fa-sign-out-alt');
+        }, 50);
+    }, 500);
+}
       async function resetAllData() {
           const confirmed = await confirm('<i class="fa-solid fa-triangle-exclamation"></i> WARNING: This will permanently delete ALL your data including:</br></br>• Your account (username & password)</br>• All settings and preferences</br>• All files and folders</br>• Installed themes and apps</br>• Boot preferences</br></br>This action CANNOT be undone! Are you absolutely sure you want to continue?');
           if (!confirmed) return;
@@ -9123,6 +9227,19 @@ function setupStep4Back() {
       };
       let installedApps = [];
       let startupApps = [];
+      
+      // Password hashing utility
+      function hashPassword(password) {
+          const salt = 'NautilusOS_Salt_2024'; // Simple salt for demo
+          let hash = 0;
+          const combined = password + salt;
+          for (let i = 0; i < combined.length; i++) {
+              const char = combined.charCodeAt(i);
+              hash = ((hash << 5) - hash) + char;
+              hash = hash & hash; // Convert to 32-bit integer
+          }
+          return hash.toString(16);
+      }
 
       function loadInstalledApps() {
           const saved = localStorage.getItem('nautilusOS_installedApps');
@@ -9566,11 +9683,14 @@ function refreshTaskManager() {
           }, 150);
       };
 function updateStartMenu() {
-    const container = document.getElementById('installedAppsInStartMenu');
-    if (!container) return;
+    const appGrid = document.querySelector('.app-grid');
+    if (!appGrid) return;
     
-    container.innerHTML = '';
+    // Remove existing installed apps from grid
+    const existingInstalledApps = appGrid.querySelectorAll('.app-item[data-installed="true"]');
+    existingInstalledApps.forEach(el => el.remove());
     
+    // Add installed apps at the end
     installedApps.forEach(appName => {
         let appConfig = {};
         if (appName === 'startup-apps') {
@@ -9583,13 +9703,14 @@ function updateStartMenu() {
         
         const appItem = document.createElement('div');
         appItem.className = 'app-item';
+        appItem.setAttribute('data-installed', 'true');
         appItem.onclick = () => openApp(appName);
         appItem.innerHTML = `
             <i class="fas ${appConfig.icon}"></i>
             <span>${appConfig.label}</span>
         `;
         
-        container.appendChild(appItem);
+        appGrid.appendChild(appItem);
     });
 }
 
@@ -10013,6 +10134,22 @@ document.addEventListener('click', (e) => {
 document.addEventListener('contextmenu', () => {
     hideProperties();
 });
+function updateLoginScreen() {
+    const isPasswordless = localStorage.getItem('nautilusOS_isPasswordless') === 'true';
+    const passwordWrapper = document.getElementById('passwordWrapper');
+    const loginSubtitle = document.getElementById('loginSubtitle');
+    const loginContainer = document.querySelector('.login-container');
+    
+    if (isPasswordless) {
+        if (passwordWrapper) passwordWrapper.style.display = 'none';
+        if (loginSubtitle) loginSubtitle.textContent = 'Passwordless account - just enter your username';
+        if (loginContainer) loginContainer.classList.add('passwordless');
+    } else {
+        if (passwordWrapper) passwordWrapper.style.display = 'block';
+        if (loginSubtitle) loginSubtitle.textContent = 'Sign in to continue';
+        if (loginContainer) loginContainer.classList.remove('passwordless');
+    }
+}
     </script>
   </body>
 </html>
