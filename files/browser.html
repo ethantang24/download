@@ -223,48 +223,69 @@ function loadURL(url){
 function setTheme(theme){
   const root=document.documentElement;
   localStorage.setItem("theme",theme);
+
+  let bgColor = "#111"; // fallback
+  let font = "'Poppins', sans-serif";
+
   switch(theme){
     case"dark":
-      root.style.setProperty("--bg","#111");
-      root.style.setProperty("--fg","#fff");
-      root.style.setProperty("--font","'Poppins', sans-serif");
+      bgColor="#111";
+      font="'Poppins', sans-serif";
       break;
     case"gradient":
+      bgColor="#ff6ec4"; // pick main color for luminance check
+      font="'Raleway', sans-serif";
       root.style.setProperty("--bg","linear-gradient(135deg,#ff6ec4,#7873f5)");
-      root.style.setProperty("--fg","#fff");
-      root.style.setProperty("--font","'Raleway', sans-serif");
       break;
     case"frosty":
-      root.style.setProperty("--bg","rgba(240,240,255,0.1)");
-      root.style.setProperty("--fg","#111");
-      root.style.setProperty("--font","'Roboto', sans-serif");
+      bgColor="#f0f0ff";
+      font="'Roboto', sans-serif";
       break;
     case"sunset":
+      bgColor="#ff9966";
+      font="'Raleway', sans-serif";
       root.style.setProperty("--bg","linear-gradient(120deg,#ff9966,#ff5e62)");
-      root.style.setProperty("--fg","#fff");
-      root.style.setProperty("--font","'Raleway', sans-serif");
       break;
     case"neon":
+      bgColor="#00f260";
+      font="'Orbitron', sans-serif";
       root.style.setProperty("--bg","linear-gradient(135deg,#00f260,#0575e6)");
-      root.style.setProperty("--fg","#0ff");
-      root.style.setProperty("--font","'Orbitron', sans-serif");
       break;
     case"aqua":
+      bgColor="#00d2ff";
+      font="'Roboto', sans-serif";
       root.style.setProperty("--bg","linear-gradient(135deg,#00d2ff,#3a7bd5)");
-      root.style.setProperty("--fg","#fff");
-      root.style.setProperty("--font","'Roboto', sans-serif");
       break;
     case"fire":
+      bgColor="#ff416c";
+      font="'Press Start 2P', cursive";
       root.style.setProperty("--bg","linear-gradient(135deg,#ff416c,#ff4b2b)");
-      root.style.setProperty("--fg","#fff");
-      root.style.setProperty("--font","'Press Start 2P', cursive");
       break;
     case"lavender":
+      bgColor="#c471ed";
+      font="'Raleway', sans-serif";
       root.style.setProperty("--bg","linear-gradient(135deg,#c471ed,#f64f59)");
-      root.style.setProperty("--fg","#fff");
-      root.style.setProperty("--font","'Raleway', sans-serif");
       break;
   }
+
+  // Set font
+  root.style.setProperty("--font", font);
+
+  // Calculate luminance to auto-set font color
+  const rgb = hexToRgb(bgColor);
+  const luminance = (0.299*rgb.r + 0.587*rgb.g + 0.114*rgb.b)/255;
+  const fgColor = luminance > 0.5 ? "#111" : "#fff"; // light bg → dark font, dark bg → light font
+  root.style.setProperty("--fg", fgColor);
+}
+
+// Helper function to convert HEX to RGB
+function hexToRgb(hex) {
+  hex = hex.replace(/^#/, '');
+  if(hex.length===3){
+    hex=hex.split('').map(x=>x+x).join('');
+  }
+  const num=parseInt(hex,16);
+  return { r:(num>>16)&255, g:(num>>8)&255, b:num&255 };
 }
 
 // === Settings Modal ===
