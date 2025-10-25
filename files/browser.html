@@ -1,353 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Ethan Browser — Minimal</title>
+<title>Ethan Browser</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#0b0b0d; --panel:#111; --muted:#9aa0a6; --fg:#fff;
-  }
+  :root {--bg:#0b0b0d; --panel:#111; --muted:#9aa0a6; --fg:#fff;}
   *{box-sizing:border-box}
   html,body{height:100%}
-  body{
-    margin:0;
-    font-family:"Poppins",sans-serif;
-    background:var(--bg);
-    color:var(--fg);
-    display:flex;
-    flex-direction:column;
-    min-height:100vh;
-    overflow:hidden;
-  }
-
-  header{
-    display:flex;
-    gap:8px;
-    align-items:center;
-    padding:10px;
-    background:rgba(255,255,255,0.02);
-    backdrop-filter:blur(6px);
-    z-index:5;
-  }
-  .btn{
-    background:rgba(255,255,255,0.06);
-    color:var(--fg);
-    border:0;
-    padding:8px 12px;
-    border-radius:8px;
-    cursor:pointer;
-  }
-  .btn:hover{ background:rgba(255,255,255,0.1) }
-
-  #urlBar{
-    flex:1;
-    padding:8px 12px;
-    border-radius:8px;
-    border:0;
-    background:rgba(255,255,255,0.04);
-    color:#cfcfcf;
-    pointer-events:none;
-    user-select:none;
-    font-size:14px;
-  }
-
-  main{flex:1;position:relative;display:flex;flex-direction:column}
-  iframe{flex:1;border:0;width:100%;height:100%;background:white}
-
-  /* loading overlay */
-  #loadingOverlay{
-    position:fixed;
-    inset:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    flex-direction:column;
-    gap:10px;
-    background:rgba(0,0,0,0.7);
-    z-index:40;
-    opacity:0;
-    pointer-events:none;
-    transition:opacity .22s ease;
-  }
-  #loadingOverlay.active{opacity:1;pointer-events:auto}
-  .spinner{
-    width:44px;height:44px;border-radius:50%;
-    border:4px solid rgba(255,255,255,0.14);
-    border-top-color:#fff; animation:spin .9s linear infinite;
-  }
+  body{margin:0;font-family:"Poppins",sans-serif;display:flex;flex-direction:column;background:var(--bg);color:var(--fg);overflow:hidden;}
+  header{display:flex;align-items:center;padding:10px;background:rgba(255,255,255,0.02);backdrop-filter:blur(6px);}
+  .btn{background:rgba(255,255,255,0.06);color:var(--fg);border:0;padding:8px 12px;border-radius:8px;cursor:pointer;}
+  .btn:hover{background:rgba(255,255,255,0.1);}
+  #urlBar{flex:1;padding:8px 12px;border-radius:8px;border:0;background:rgba(255,255,255,0.04);color:#cfcfcf;pointer-events:none;user-select:none;font-size:14px;opacity:0.8;}
+  main{flex:1;position:relative;display:flex;flex-direction:column;}
+  iframe{flex:1;border:0;width:100%;height:100%;}
+  #loadingOverlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;background:rgba(0,0,0,0.7);z-index:40;opacity:0;pointer-events:none;transition:opacity .22s ease;}
+  #loadingOverlay.active{opacity:1;pointer-events:auto;}
+  .spinner{width:44px;height:44px;border-radius:50%;border:4px solid rgba(255,255,255,0.14);border-top-color:#fff;animation:spin .9s linear infinite;}
   @keyframes spin{to{transform:rotate(360deg)}}
-
-  /* update modal */
-  #modalBackdrop{
-    position:fixed;inset:0;background:rgba(0,0,0,0.65);backdrop-filter:blur(3px);z-index:50;display:none;
-  }
-  #updateModal{
-    position:fixed; left:50%; top:50%; transform:translate(-50%,-50%);
-    background: #0e0e10; color:var(--fg); padding:20px 22px; border-radius:12px;
-    box-shadow:0 20px 60px rgba(0,0,0,0.6); width:340px; z-index:60; display:none;
-  }
-  #updateModal h3{margin:0 0 8px 0;font-size:18px}
-  .modal-actions{display:flex;gap:8px;justify-content:center;margin-top:12px}
-  .modal-actions button{padding:8px 12px;border-radius:8px;border:0;cursor:pointer}
-  .btn-primary{background:#0b84ff;color:white}
-  .btn-ghost{background:#444;color:white}
-
-  footer{
-    padding:8px 12px;
-    background:rgba(255,255,255,0.02);
-    color:var(--muted);
-    font-size:13px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:8px;
-  }
+  footer{padding:8px 12px;background:rgba(255,255,255,0.02);color:var(--muted);font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:8px;}
 </style>
 </head>
 <body>
-
 <header>
   <button id="backBtn" class="btn">←</button>
   <button id="homeBtn" class="btn">🏠</button>
-  <input id="urlBar" readonly value="ethan://home">
+  <input id="urlBar" readonly value="">
 </header>
-
 <main>
   <iframe id="webFrame" sandbox="allow-scripts allow-forms allow-same-origin allow-modals"></iframe>
 </main>
-
 <footer>
   <div id="status">● Checking…</div>
   <div>ethan browser v1.0.1</div>
 </footer>
-
-<!-- loading overlay -->
-<div id="loadingOverlay" aria-hidden="true">
-  <div class="spinner" role="progressbar" aria-label="Loading"></div>
+<div id="loadingOverlay">
+  <div class="spinner"></div>
   <div id="loadingText">Loading…</div>
 </div>
 
-<!-- update modal -->
-<div id="modalBackdrop"></div>
-<div id="updateModal" role="dialog" aria-modal="true">
-  <h3>🔔 Update Available</h3>
-  <div id="updateMessage">Checking version…</div>
-  <div class="modal-actions" id="modalButtons">
-    <!-- buttons added dynamically -->
-  </div>
-</div>
-
 <script>
-/* ---------------- CONFIG ---------------- */
-const allowedDomain = "https://ethanytangcodes.github.io";
-const homepage = allowedDomain + "/index.html";
-const webFrame = document.getElementById('webFrame');
-const urlBar = document.getElementById('urlBar');
-const backBtn = document.getElementById('backBtn');
-const homeBtn = document.getElementById('homeBtn');
-const loadingOverlay = document.getElementById('loadingOverlay');
-const loadingText = document.getElementById('loadingText');
-const statusEl = document.getElementById('status');
+const allowedDomain="https://ethanytangcodes.github.io";
+const homepage=allowedDomain+"/index.html";
+const webFrame=document.getElementById('webFrame');
+const urlBar=document.getElementById('urlBar');
+const backBtn=document.getElementById('backBtn');
+const homeBtn=document.getElementById('homeBtn');
+const loadingOverlay=document.getElementById('loadingOverlay');
+const statusEl=document.getElementById('status');
+const workerURL="https://browserupdate.ethantytang11.workers.dev/version";
+const currentVersion="1.0.1";
+const KEY_HISTORY='ethan_historyStack_v2';
+const KEY_INDEX='ethan_historyIndex_v2';
+let historyStack=[],currentIndex=-1;
 
-const workerURL = "https://browserupdate.ethantytang11.workers.dev/version"; // set your worker
-const currentVersion = "1.0.1";
+function saveState(){localStorage.setItem(KEY_HISTORY,JSON.stringify(historyStack));localStorage.setItem(KEY_INDEX,String(currentIndex));}
+function loadState(){historyStack=JSON.parse(localStorage.getItem(KEY_HISTORY)||'[]');currentIndex=parseInt(localStorage.getItem(KEY_INDEX)||'-1',10);if(isNaN(currentIndex))currentIndex=-1;}
 
-/* ---------------- STORAGE KEYS ---------------- */
-const KEY_HISTORY = 'ethan_historyStack_v1';
-const KEY_INDEX = 'ethan_historyIndex_v1';
-
-/* ---------------- STATE ---------------- */
-let historyStack = [];
-let currentIndex = -1;
-let forcedUpdate = false;
-
-/* ---------------- UTILS ---------------- */
-function saveState(){
-  try{
-    localStorage.setItem(KEY_HISTORY, JSON.stringify(historyStack));
-    localStorage.setItem(KEY_INDEX, String(currentIndex));
-  }catch(e){ console.warn('saveState failed', e); }
-}
-function loadState(){
-  try{
-    const raw = localStorage.getItem(KEY_HISTORY);
-    const idx = parseInt(localStorage.getItem(KEY_INDEX) || "-1", 10);
-    historyStack = raw ? JSON.parse(raw) : [];
-    currentIndex = Number.isFinite(idx) ? idx : (historyStack.length - 1);
-    if(!Array.isArray(historyStack)) historyStack = [];
-    if(typeof currentIndex !== 'number' || isNaN(currentIndex)) currentIndex = historyStack.length - 1;
-  }catch(e){
-    historyStack = [];
-    currentIndex = -1;
-  }
-}
-// ensure URL is allowed and not the browser HTML itself
 function sanitizeUrl(url){
   if(!url) return homepage;
   try{
-    const u = new URL(url, homepage);
-    // don't allow URLs outside allowedDomain
-    if(u.origin !== (new URL(allowedDomain)).origin) return homepage;
-    // avoid loading the browser HTML inside iframe (if saved lastSite pointed to the same file)
-    const selfUrl = window.location.href.split('#')[0].split('?')[0];
-    if(u.href === selfUrl) return homepage;
+    const u=new URL(url,homepage);
+    if(u.origin!==new URL(allowedDomain).origin) return homepage;
+    const selfUrl=window.location.href.split('#')[0].split('?')[0];
+    if(u.href===selfUrl) return homepage;
     return u.href;
-  }catch(e){
-    return homepage;
-  }
+  }catch(e){return homepage;}
 }
+
 function displayUrl(url){
-  if(!url) { urlBar.value = 'ethan://home'; return; }
-  if(url.startsWith(allowedDomain)) {
-    urlBar.value = url.replace(allowedDomain, 'ethan://');
-  } else {
-    urlBar.value = url;
-  }
+  if(url===homepage){urlBar.value='ethan://home';}
+  else{urlBar.value='';}
 }
 
-/* ---------------- LOADING UI ---------------- */
-function showLoading(text = 'Loading…'){
-  loadingText.textContent = text;
-  loadingOverlay.classList.add('active');
-}
-function hideLoading(){
-  loadingOverlay.classList.remove('active');
-}
+function showLoading(){loadingOverlay.classList.add('active');}
+function hideLoading(){loadingOverlay.classList.remove('active');}
 
-/* ---------------- NAVIGATION (pseudo-history) ---------------- */
-function pushAndLoad(url){
-  const clean = sanitizeUrl(url);
-  // avoid consecutive duplicates
-  const current = historyStack[currentIndex] || null;
-  if(clean === current){
-    // still load to refresh
-    loadIframe(clean, false);
-    return;
-  }
-  // cut forward history if any
-  if(currentIndex < historyStack.length - 1){
-    historyStack = historyStack.slice(0, currentIndex + 1);
-  }
-  historyStack.push(clean);
-  currentIndex = historyStack.length - 1;
-  saveState();
-  loadIframe(clean, false);
-}
-
-function loadIframe(url, push = false){
-  const clean = sanitizeUrl(url);
+function loadIframe(url,push=false){
+  const clean=sanitizeUrl(url);
   showLoading();
-  try{
-    webFrame.src = clean;
-  }catch(e){
-    console.error('assign src failed', e);
-    webFrame.src = homepage;
-  }
+  webFrame.src=clean;
   displayUrl(clean);
-  localStorage.setItem('ethan_lastSite', clean);
-  if(push){
-    pushAndLoad(clean);
-  }
+  localStorage.setItem('ethan_lastSite',clean);
+  if(push){pushAndLoad(clean);}
 }
 
-backBtn.addEventListener('click', ()=>{
-  if(currentIndex > 0){
-    currentIndex = Math.max(0, currentIndex - 1);
+function pushAndLoad(url){
+  const clean=sanitizeUrl(url);
+  const current=historyStack[currentIndex]||null;
+  if(clean===current){loadIframe(clean,false);return;}
+  if(currentIndex<historyStack.length-1){historyStack=historyStack.slice(0,currentIndex+1);}
+  historyStack.push(clean);
+  currentIndex=historyStack.length-1;
+  saveState();
+  loadIframe(clean,false);
+}
+
+backBtn.addEventListener('click',()=>{
+  if(currentIndex>0){
+    currentIndex=Math.max(0,currentIndex-1);
     saveState();
-    const prev = historyStack[currentIndex];
-    loadIframe(prev, false);
-  } else {
-    // optionally flash or disable — keep simple
-    // no-op if there's nowhere to go
+    loadIframe(historyStack[currentIndex],false);
   }
 });
-homeBtn.addEventListener('click', ()=>{
-  pushAndLoad(homepage);
-});
 
-/* iframe onload hides loader and updates display (we can't read iframe location cross-origin) */
-webFrame.addEventListener('load', ()=>{
-  // small delay so visual feels smooth
-  setTimeout(()=> hideLoading(), 200);
-});
+homeBtn.addEventListener('click',()=>{pushAndLoad(homepage);});
 
-/* ---------------- INITIALIZE ---------------- */
+webFrame.addEventListener('load',()=>{setTimeout(()=>hideLoading(),150);});
+
+// Initialize
 loadState();
-// If we have a valid saved page, load it; otherwise load homepage
-if(currentIndex >= 0 && historyStack[currentIndex]){
-  const candidate = sanitizeUrl(historyStack[currentIndex]);
-  // if sanitized to homepage because it was invalid, and there are other entries, try last entry
-  if(candidate === homepage && historyStack.length > 1){
-    const alt = sanitizeUrl(historyStack[historyStack.length - 1]);
-    currentIndex = historyStack.length - 1;
-    saveState();
-    loadIframe(alt, false);
-  } else {
-    loadIframe(candidate, false);
-  }
-} else {
-  // nothing saved -> start on homepage and push it
-  historyStack = [];
-  currentIndex = -1;
-  pushAndLoad(homepage);
-}
+if(currentIndex>=0 && historyStack[currentIndex]){loadIframe(historyStack[currentIndex],false);}
+else{historyStack=[];currentIndex=-1;pushAndLoad(homepage);}
 
-/* ---------------- ONLINE STATUS ---------------- */
-function updateOnlineStatus(){
-  statusEl.textContent = navigator.onLine ? '● Online' : '● Offline';
-  statusEl.style.color = navigator.onLine ? '#7fffb0' : '#ff7b7b';
-}
-window.addEventListener('online', updateOnlineStatus);
-window.addEventListener('offline', updateOnlineStatus);
+// online/offline
+function updateOnlineStatus(){statusEl.textContent=navigator.onLine?'● Online':'● Offline';statusEl.style.color=navigator.onLine?'#7fffb0':'#ff7b7b';}
+window.addEventListener('online',updateOnlineStatus);
+window.addEventListener('offline',updateOnlineStatus);
 updateOnlineStatus();
 
-/* ---------------- UPDATE CHECK ---------------- */
+// browser-style update notification
 async function checkForUpdates(){
   try{
-    const res = await fetch(workerURL, { method: 'GET', headers: { 'Content-Type':'application/json' }});
+    const res=await fetch(workerURL,{headers:{'Content-Type':'application/json'}});
     if(!res.ok) return;
-    const data = await res.json();
-    const remote = String(data.version || "0.0.0");
-    // compute simple diff metric: major*100 + minor*10 + patch
-    const parseV = v => (v.split('.').map(n=>parseInt(n||0)));
-    const a = parseV(currentVersion);
-    const b = parseV(remote);
-    const diff = (b[0]-a[0])*100 + (b[1]-a[1])*10 + (b[2]-a[2] || 0);
-    if(diff > 0){
-      const modal = document.getElementById('updateModal');
-      const backdrop = document.getElementById('modalBackdrop');
-      const msg = document.getElementById('updateMessage');
-      const btns = document.getElementById('modalButtons');
-      msg.textContent = data.message || ('New version: ' + remote);
-      btns.innerHTML = '';
-      if(diff >= 20){
-        // forced update — only Update button
-        forcedUpdate = true;
-        const u = document.createElement('button'); u.className='btn-primary'; u.textContent='Update Now';
-        u.onclick = ()=> window.location.href = allowedDomain + '/download';
-        btns.appendChild(u);
-      } else {
-        forcedUpdate = false;
-        const u = document.createElement('button'); u.className='btn-primary'; u.textContent='Update';
-        u.onclick = ()=> window.location.href = allowedDomain + '/download';
-        const c = document.createElement('button'); c.className='btn-ghost'; c.textContent='Close';
-        c.onclick = ()=> { modal.style.display='none'; backdrop.style.display='none'; };
-        btns.appendChild(u); btns.appendChild(c);
+    const data=await res.json();
+    const remote=String(data.version||"0.0.0");
+    const parseV=v=>v.split('.').map(n=>parseInt(n||0));
+    const a=parseV(currentVersion),b=parseV(remote);
+    const diff=(b[0]-a[0])*100+(b[1]-a[1])*10+(b[2]-a[2]||0);
+    if(diff>0 && Notification.permission!=="denied"){
+      if(Notification.permission==="default") await Notification.requestPermission();
+      if(Notification.permission==="granted"){
+        new Notification("Ethan Browser Update",{body:diff>=20?"This version is no longer supported 😢":data.message||("New version "+remote),icon:allowedDomain+"/icon.png"});
       }
-      backdrop.style.display = 'block';
-      modal.style.display = 'block';
     }
-  }catch(e){
-    console.warn('update check failed', e);
-  }
+  }catch(e){console.warn('update check failed',e);}
 }
-// run on init
 checkForUpdates();
-// also poll every 10 minutes
-setInterval(checkForUpdates, 10 * 60 * 1000);
-
+setInterval(checkForUpdates,10*60*1000);
 </script>
 </body>
 </html>
