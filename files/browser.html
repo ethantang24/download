@@ -1,175 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Ethan Browser</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Orbitron:wght@500&family=Raleway:wght@500&family=Press+Start+2P&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root {
+:root{
   --bg:#111;
   --fg:#fff;
   --header:rgba(255,255,255,0.05);
-  --font:'Poppins', sans-serif;
+  --font:'Poppins',sans-serif;
 }
-body {
+/* Layout */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
   margin:0;
   font-family:var(--font);
   background:var(--bg);
   color:var(--fg);
   display:flex;
   flex-direction:column;
-  height:100vh;
-  transition:background 0.6s ease, color 0.6s ease, font-family 0.6s ease;
+  transition: background .45s ease, color .45s ease, font-family .45s ease;
+  min-height:100vh;
 }
-header {
-  display:flex;
-  align-items:center;
-  gap:5px;
-  padding:6px 10px;
-  background:var(--header);
+/* Top bar */
+header{
+  display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--header);
   backdrop-filter:blur(5px);
 }
-header button {
-  padding:6px 10px;
-  border:none;
-  border-radius:8px;
-  background:rgba(255,255,255,0.1);
-  color:var(--fg);
-  cursor:pointer;
+.header-btn{
+  padding:6px 10px;border-radius:8px;border:0;background:rgba(255,255,255,0.06);
+  color:var(--fg);cursor:pointer;
 }
-header button:hover { background:rgba(255,255,255,0.2); }
-#urlDisplay {
-  flex:1;
-  padding:6px 10px;
-  border-radius:8px;
-  border:none;
-  background:rgba(255,255,255,0.1);
-  color:var(--fg);
-  pointer-events:none;
-  transition:color 0.6s ease;
+.header-btn:hover{background:rgba(255,255,255,0.12)}
+#urlDisplay{
+  flex:1;padding:8px 12px;border-radius:8px;border:0;background:rgba(255,255,255,0.06);
+  color:var(--fg);pointer-events:none;font-size:14px;
 }
-iframe {
-  flex:1;
-  border:none;
-  width:100%;
-}
-footer {
-  text-align:center;
-  padding:4px;
-  font-size:12px;
-  color:var(--fg);
-  background:var(--header);
-  transition:color 0.6s ease;
-}
+/* Main frame */
+main{flex:1;position:relative;display:flex;flex-direction:column;overflow:hidden}
+iframe{flex:1;border:0;width:100%;height:100%;background:white}
 
-/* Settings popup */
-#settingsPopup {
-  position:fixed;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  background:rgba(30,30,30,0.95);
-  padding:20px;
-  border-radius:12px;
-  display:none;
-  flex-direction:column;
-  gap:10px;
-  min-width:250px;
-  box-shadow:0 0 15px rgba(0,0,0,0.5);
-  z-index:100;
-}
-#settingsPopup select, #settingsPopup input {
-  padding:6px;
-  border:none;
-  border-radius:6px;
-  width:100%;
-}
-#settingsPopup button {
-  padding:6px 10px;
-  border:none;
-  border-radius:8px;
-  background:rgba(255,255,255,0.1);
-  color:white;
-  cursor:pointer;
-}
+/* Footer */
+footer{padding:6px 10px;background:var(--header);color:var(--fg);font-size:13px;display:flex;align-items:center;justify-content:space-between;gap:10px}
 
-/* Update popup */
-#popupBackdrop {
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.7);
-  backdrop-filter:blur(3px);
-  z-index:999;
+/* Welcome screen (default homepage) */
+#welcome{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:24px;background:transparent;z-index:10;
 }
-#updatePopup {
-  position:fixed;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  background:rgba(25,25,25,0.95);
-  border-radius:16px;
-  padding:25px 30px;
-  box-shadow:0 0 40px rgba(0,0,0,0.6);
-  width:320px;
-  text-align:center;
-  display:none;
-  flex-direction:column;
-  gap:15px;
-  color:white;
-  z-index:1000;
-  animation:fadeIn 0.4s ease;
+.welcome-card{
+  width:min(760px,95%);background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;backdrop-filter:blur(6px);
+  box-shadow:0 8px 30px rgba(0,0,0,0.5);text-align:center;
 }
-#updatePopup h2 {
-  margin:0;
-  font-size:18px;
-  font-weight:600;
-}
-#updatePopup p {
-  font-size:14px;
-  line-height:1.4;
-  color:#ddd;
-}
-#updatePopup button {
-  border:none;
-  border-radius:10px;
-  padding:8px 14px;
-  cursor:pointer;
-  color:white;
-  font-weight:500;
-  transition:background 0.3s ease;
-}
-#closePopupBtn { background:#555; }
-#updateNowBtn { background:#007bff; }
-#closePopupBtn:hover { background:#777; }
-#updateNowBtn:hover { background:#1493ff; }
+.welcome-card h1{margin:0 0 8px 0;font-size:20px}
+.welcome-card p{margin:0 0 16px;color:rgba(255,255,255,0.8)}
+.quick-links{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.link-btn{padding:10px 14px;border-radius:10px;border:0;background:rgba(255,255,255,0.06);color:var(--fg);cursor:pointer}
+.link-btn:hover{transform:translateY(-3px);transition:transform .18s ease}
 
-@keyframes fadeIn {
-  from { opacity:0; transform:translate(-50%,-48%); }
-  to { opacity:1; transform:translate(-50%,-50%); }
-}
+/* Settings */
+#settingsPopup{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(20,20,20,0.98);padding:18px;border-radius:12px;display:none;z-index:1000;min-width:260px;box-shadow:0 12px 40px rgba(0,0,0,0.6)}
+#settingsPopup label{display:block;margin-bottom:6px;color:rgba(255,255,255,0.85)}
+#settingsPopup select{width:100%;padding:8px;border-radius:8px;border:0;background:rgba(255,255,255,0.04);color:inherit}
+
+/* Loading overlay */
+#loaderBackdrop{position:absolute;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:50;opacity:0;pointer-events:none;transition:opacity .28s ease}
+#loaderBackdrop.visible{opacity:1;pointer-events:auto}
+.loaderCard{background:rgba(0,0,0,0.7);padding:18px;border-radius:12px;display:flex;flex-direction:column;align-items:center;gap:12px;color:#fff;min-width:220px}
+.spinner{width:36px;height:36px;border-radius:50%;border:4px solid rgba(255,255,255,0.12);border-top-color:#fff;animation:spin 0.9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Update modal (centered) */
+#popupBackdrop{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(3px);display:none;z-index:200}
+#updatePopup{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(25,25,25,0.98);padding:22px;border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,0.6);width:360px;max-width:92%;display:none;z-index:210;color:var(--fg)}
+#updatePopup h2{margin:0 0 8px 0;font-size:18px}
+#updatePopup p{margin:0 0 12px;color:rgba(255,255,255,0.85)}
+.update-actions{display:flex;gap:10px;justify-content:center}
+.btn{padding:8px 12px;border-radius:10px;border:0;color:white;cursor:pointer}
+.btn.ghost{background:#555}
+.btn.primary{background:#0b84ff}
+
+/* small status */
+#status{font-size:13px;opacity:0.95}
 </style>
 </head>
 <body>
-
 <header>
-  <button onclick="goBack()">←</button>
-  <button onclick="reloadPage()">⟳</button>
-  <button onclick="goHome()">🏠</button>
-  <input id="urlDisplay" readonly value="Loading...">
-  <button onclick="openSettings()">⚙️</button>
+  <button class="header-btn" id="backBtn" title="Back">←</button>
+  <button class="header-btn" id="reloadBtn" title="Reload">⟳</button>
+  <button class="header-btn" id="homeBtn" title="Home">🏠</button>
+  <input id="urlDisplay" readonly value="Loading..." />
+  <button class="header-btn" id="settingsBtn" title="Settings">⚙️</button>
 </header>
 
-<iframe id="browserFrame" src=""></iframe>
+<main>
+  <!-- welcome (homepage) -->
+  <div id="welcome">
+    <div class="welcome-card">
+      <h1>Welcome to Ethan Browser</h1>
+      <p>Mini browser locked to your site collection — pick a page to open. Your last page & theme are saved automatically.</p>
+      <div class="quick-links">
+        <!-- these use loadURL so tracking works -->
+        <button class="link-btn" data-path="/index.html">Home</button>
+        <button class="link-btn" data-path="/projects.html">Projects</button>
+        <button class="link-btn" data-path="/notes.html">Notes</button>
+        <button class="link-btn" data-path="/about.html">About</button>
+        <button class="link-btn" data-path="/downloads.html">Downloads</button>
+      </div>
+      <p style="margin-top:14px;font-size:13px;color:rgba(255,255,255,0.75)">Pro tip: pages opened from within the iframe may not be tracked automatically — use the buttons above or the home/controls in this UI.</p>
+    </div>
+  </div>
 
-<footer>ethan browser v1.0.1</footer>
+  <!-- iframe -->
+  <iframe id="browserFrame" src=""></iframe>
 
-<!-- SETTINGS POPUP -->
+  <!-- loader -->
+  <div id="loaderBackdrop">
+    <div class="loaderCard">
+      <div class="spinner"></div>
+      <div id="loaderText">Loading…</div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div id="status">● Checking…</div>
+  <div>ethan browser v1.0.1</div>
+</footer>
+
+<!-- Settings popup -->
 <div id="settingsPopup">
-  <h3>Settings</h3>
-  <label>Theme:</label>
-  <select id="themeSelect" onchange="setTheme(this.value)">
+  <label for="themeSelect">Theme</label>
+  <select id="themeSelect">
     <option value="dark">Dark</option>
     <option value="gradient">Gradient</option>
     <option value="frosty">Frosty</option>
@@ -179,176 +144,275 @@ footer {
     <option value="fire">Fire</option>
     <option value="lavender">Lavender</option>
   </select>
-  <button onclick="closeSettings()">Close</button>
+  <div style="height:8px"></div>
+  <button class="btn ghost" id="closeSettingsBtn">Close</button>
 </div>
 
-<!-- UPDATE POPUP -->
+<!-- Update popup/backdrop -->
 <div id="popupBackdrop"></div>
-<div id="updatePopup">
-  <h2>🔔 Update Available</h2>
-  <p id="updateMessage"></p>
-  <div>
-    <button id="closePopupBtn" onclick="closeUpdatePopup()">Close</button>
-    <button id="updateNowBtn" onclick="updateNow()">Update</button>
+<div id="updatePopup" role="dialog" aria-modal="true">
+  <h2 id="updateTitle">Update Available</h2>
+  <p id="updateMessage">Checking version…</p>
+  <div class="update-actions">
+    <button class="btn ghost" id="closePopupBtn">Close</button>
+    <button class="btn primary" id="updateNowBtn">Update Now</button>
   </div>
 </div>
 
 <script>
+/* ===== CONFIG ===== */
 const currentVersion = "1.0.1";
-const workerURL = "https://browserupdate.ethantytang11.workers.dev/version";
-const allowedDomain = "https://ethanytangcodes.github.io";
+const workerURL = "https://browserupdate.ethantytang11.workers.dev/version"; // your worker
+const allowedDomain = "https://ethanytangcodes.github.io"; // locked domain
 const updatePage = allowedDomain + "/download";
+
+/* ===== STATE & ELEMENTS ===== */
+const iframe = document.getElementById('browserFrame');
+const urlDisplay = document.getElementById('urlDisplay');
+const welcome = document.getElementById('welcome');
+const loaderBackdrop = document.getElementById('loaderBackdrop');
+const loaderText = document.getElementById('loaderText');
+const statusEl = document.getElementById('status');
+const popupBackdrop = document.getElementById('popupBackdrop');
+const updatePopup = document.getElementById('updatePopup');
+const updateMessage = document.getElementById('updateMessage');
+const closePopupBtn = document.getElementById('closePopupBtn');
+const updateNowBtn = document.getElementById('updateNowBtn');
+const settingsPopup = document.getElementById('settingsPopup');
+const themeSelect = document.getElementById('themeSelect');
+const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+
 let forcedUpdate = false;
 
-// === Navigation ===
-function goBack(){document.getElementById('browserFrame').contentWindow.history.back();}
-function reloadPage(){document.getElementById('browserFrame').contentWindow.location.reload();}
-function goHome(){loadURL(allowedDomain+"/index.html");}
+/* ===== UTILS ===== */
+function hexToRgb(hex){
+  hex = (hex||"#000").replace(/^#/, '');
+  if(hex.length===3) hex = hex.split('').map(c=>c+c).join('');
+  const n = parseInt(hex,16);
+  return { r:(n>>16)&255, g:(n>>8)&255, b:n&255 };
+}
+function luminance(rgb){
+  // simple perceived luminance
+  return (0.299*rgb.r + 0.587*rgb.g + 0.114*rgb.b)/255;
+}
+function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
 
-// === URL Loading & Saving ===
-function loadURL(url){
-  if(!url.startsWith(allowedDomain)){
-    alert("You can only browse ethanytangcodes.github.io!");
+/* ===== THEME & CONTRAST ===== */
+function applyTheme(themeName){
+  // Representative solid color used to decide contrast
+  let rep = "#111";
+  let background = rep;
+  let font = "'Poppins', sans-serif";
+
+  switch(themeName){
+    case "dark": rep="#111"; background=rep; font="'Poppins',sans-serif"; break;
+    case "gradient": rep="#ff6ec4"; background="linear-gradient(135deg,#ff6ec4,#7873f5)"; font="'Raleway',sans-serif"; break;
+    case "frosty": rep="#f0f6ff"; background="rgba(240,246,255,0.08)"; font="'Roboto',sans-serif"; break;
+    case "sunset": rep="#ff9966"; background="linear-gradient(120deg,#ff9966,#ff5e62)"; font="'Raleway',sans-serif"; break;
+    case "neon": rep="#00f260"; background="linear-gradient(135deg,#00f260,#0575e6)"; font="'Orbitron',sans-serif"; break;
+    case "aqua": rep="#00d2ff"; background="linear-gradient(135deg,#00d2ff,#3a7bd5)"; font="'Roboto',sans-serif"; break;
+    case "fire": rep="#ff416c"; background="linear-gradient(135deg,#ff416c,#ff4b2b)"; font="'Press Start 2P',cursive"; break;
+    case "lavender": rep="#c471ed"; background="linear-gradient(135deg,#c471ed,#f64f59)"; font="'Raleway',sans-serif"; break;
+  }
+
+  // apply visuals
+  document.documentElement.style.setProperty('--font', font);
+  document.body.style.background = background;
+
+  // decide contrast using representative color
+  const rgb = hexToRgb(rep);
+  const lum = luminance(rgb);
+  const fg = lum > 0.56 ? "#111" : "#fff"; // tweak threshold
+  document.documentElement.style.setProperty('--fg', fg);
+  // apply to UI elements that read styles directly
+  urlDisplay.style.color = fg;
+  document.querySelector('footer').style.color = fg;
+  // store
+  localStorage.setItem('theme', themeName);
+  // set select UI
+  if(themeSelect.value !== themeName) themeSelect.value = themeName;
+}
+
+/* ===== LOADER ===== */
+function showLoader(text = "Loading…"){
+  loaderText.textContent = text;
+  loaderBackdrop.classList.add('visible');
+}
+function hideLoader(){
+  loaderBackdrop.classList.remove('visible');
+}
+
+/* ===== NAVIGATION & TRACKING ===== */
+function isAllowed(path){
+  // Accept full URLs under allowedDomain or relative paths starting with /
+  if(!path) return false;
+  // full url?
+  try {
+    const u = new URL(path, allowedDomain);
+    return u.origin === (new URL(allowedDomain)).origin;
+  } catch(e){ return false; }
+}
+
+function loadURL(path){
+  // Accept either "/page.html" or full "https://.../page.html"
+  let url;
+  try {
+    // if path is full URL, new URL will parse it
+    url = new URL(path, allowedDomain).toString();
+  } catch(e){
+    alert("Invalid URL");
     return;
   }
-  const iframe=document.getElementById("browserFrame");
-  iframe.src=url;
-  iframe.onload = () => {
-    document.getElementById("urlDisplay").value=url;
-    localStorage.setItem("lastSite", url);
-  };
-}
-
-// === Theme Control ===
-function setTheme(theme){
-  const root=document.documentElement;
-  localStorage.setItem("theme",theme);
-
-  let bgColor = "#111"; // fallback solid color for luminance
-  let font = "'Poppins', sans-serif";
-  let background = bgColor;
-
-  switch(theme){
-    case"dark":
-      bgColor="#111";
-      background=bgColor;
-      font="'Poppins', sans-serif";
-      break;
-    case"gradient":
-      bgColor="#ff6ec4";
-      background="linear-gradient(135deg,#ff6ec4,#7873f5)";
-      font="'Raleway', sans-serif";
-      break;
-    case"frosty":
-      bgColor="#f0f0ff";
-      background=bgColor;
-      font="'Roboto', sans-serif";
-      break;
-    case"sunset":
-      bgColor="#ff9966";
-      background="linear-gradient(120deg,#ff9966,#ff5e62)";
-      font="'Raleway', sans-serif";
-      break;
-    case"neon":
-      bgColor="#00f260";
-      background="linear-gradient(135deg,#00f260,#0575e6)";
-      font="'Orbitron', sans-serif";
-      break;
-    case"aqua":
-      bgColor="#00d2ff";
-      background="linear-gradient(135deg,#00d2ff,#3a7bd5)";
-      font="'Roboto', sans-serif";
-      break;
-    case"fire":
-      bgColor="#ff416c";
-      background="linear-gradient(135deg,#ff416c,#ff4b2b)";
-      font="'Press Start 2P', cursive";
-      break;
-    case"lavender":
-      bgColor="#c471ed";
-      background="linear-gradient(135deg,#c471ed,#f64f59)";
-      font="'Raleway', sans-serif";
-      break;
+  if(!isAllowed(url)){
+    alert("You can only browse pages under " + new URL(allowedDomain).host);
+    return;
   }
 
-  root.style.setProperty("--bg", background);
-  root.style.setProperty("--font", font);
+  // Hide welcome screen when loading site
+  welcome.style.display = 'none';
+  // show loader
+  showLoader("Loading site…");
 
-  // Calculate luminance to auto-set font color
-  const rgb = hexToRgb(bgColor);
-  const luminance = (0.299*rgb.r + 0.587*rgb.g + 0.114*rgb.b)/255;
-  const fgColor = luminance > 0.5 ? "#111" : "#fff";
-  root.style.setProperty("--fg", fgColor);
-
-  document.body.style.background = background;
-  document.body.style.color = fgColor;
-  document.querySelector("footer").style.color = fgColor;
-  document.getElementById("urlDisplay").style.color = fgColor;
+  // set iframe src; onload will handle saving lastSite and hiding loader
+  iframe.src = url;
+  // update display immediately to the url we opened
+  urlDisplay.value = url;
 }
 
-// Helper HEX → RGB
-function hexToRgb(hex) {
-  hex = hex.replace(/^#/, '');
-  if(hex.length===3){ hex=hex.split('').map(x=>x+x).join(''); }
-  const num=parseInt(hex,16);
-  return { r:(num>>16)&255, g:(num>>8)&255, b:num&255 };
+/* Track the last site when iframe finishes loading (we only reliably track loads we initiate) */
+iframe.addEventListener('load', () => {
+  // iframe.contentWindow may be cross-origin; don't access it — rely on the src we set
+  const currentSrc = iframe.src || (localStorage.getItem('lastSite') || (allowedDomain + '/index.html'));
+  // Save the current site (this captures navigations we initiated via loadURL)
+  localStorage.setItem('lastSite', currentSrc);
+  // update UI
+  urlDisplay.value = currentSrc;
+  hideLoader();
+});
+
+/* Welcome links wired to loadURL */
+document.querySelectorAll('.link-btn').forEach(btn=>{
+  btn.addEventListener('click', () => {
+    const p = btn.dataset.path || btn.getAttribute('data-path') || "/index.html";
+    loadURL(p);
+  });
+});
+
+/* controls */
+document.getElementById('homeBtn').addEventListener('click', ()=> {
+  // show welcome card instead of an iframe page
+  welcome.style.display = 'flex';
+  iframe.src = 'about:blank';
+  urlDisplay.value = allowedDomain + '/index.html';
+});
+document.getElementById('reloadBtn').addEventListener('click', ()=> {
+  showLoader("Reloading…");
+  iframe.contentWindow?.location.reload?.();
+  // if cross-origin reload fails, reassign src to trigger load
+  setTimeout(()=>{ iframe.src = iframe.src }, 300);
+});
+document.getElementById('backBtn').addEventListener('click', ()=> {
+  try{
+    iframe.contentWindow.history.back();
+    showLoader("Going back…");
+  }catch(e){
+    // can't access cross-origin history reliably — fallback to lastSite
+    const last = localStorage.getItem('lastSite') || (allowedDomain + '/index.html');
+    loadURL(last);
+  }
+});
+
+/* Settings open/close */
+document.getElementById('settingsBtn').addEventListener('click', ()=>{ settingsPopup.style.display='block'; });
+closeSettingsBtn.addEventListener('click', ()=>{ settingsPopup.style.display='none'; });
+
+/* Theme select */
+themeSelect.addEventListener('change', ()=> applyTheme(themeSelect.value) );
+
+/* ===== ONLINE STATUS ===== */
+function updateStatus(){
+  const online = navigator.onLine;
+  statusEl.textContent = online ? "● Online" : "● Offline";
+  statusEl.style.color = online ? "#57d26b" : "#ff6b6b";
 }
+window.addEventListener('online', updateStatus);
+window.addEventListener('offline', updateStatus);
+updateStatus();
 
-// === Settings Modal ===
-function openSettings(){document.getElementById("settingsPopup").style.display="flex";}
-function closeSettings(){document.getElementById("settingsPopup").style.display="none";}
-
-// === Update Popup ===
+/* ===== UPDATE CHECK (Worker) ===== */
 function versionDiff(v1,v2){
-  const a=v1.split('.').map(Number);
-  const b=v2.split('.').map(Number);
-  return (b[0]-a[0])*100+(b[1]-a[1])*10+(b[2]-a[2]);
+  // simple semantic difference: major*100 + minor*10 + patch
+  const a = (v1||"0.0.0").split('.').map(n=>parseInt(n)||0);
+  const b = (v2||"0.0.0").split('.').map(n=>parseInt(n)||0);
+  return (b[0]-a[0])*100 + (b[1]-a[1])*10 + (b[2]-a[2]);
 }
 async function checkForUpdates(){
   try{
-    const res=await fetch(workerURL);
-    if(!res.ok)return;
-    const data=await res.json();
-    const diff=versionDiff(currentVersion,data.version);
-    const popup=document.getElementById("updatePopup");
-    const backdrop=document.getElementById("popupBackdrop");
-    const msg=document.getElementById("updateMessage");
-    const closeBtn=document.getElementById("closePopupBtn");
-    const updateBtn=document.getElementById("updateNowBtn");
-    if(diff>=20){
-      forcedUpdate=true;
-      msg.innerText="This version is no longer supported 😢";
-      closeBtn.style.display="none";
-      updateBtn.style.display="block";
-      popup.style.display="flex";
-      backdrop.style.display="block";
-    } else if(diff>0){
-      forcedUpdate=false;
-      msg.innerText=data.message||"A new version is available!";
-      closeBtn.style.display="inline-block";
-      updateBtn.style.display="inline-block";
-      popup.style.display="flex";
-      backdrop.style.display="block";
+    const res = await fetch(workerURL, {method:'GET', headers: {'Content-Type':'application/json'}});
+    if(!res.ok) return;
+    const data = await res.json();
+    const diff = versionDiff(currentVersion, data.version);
+    if(diff >= 20){
+      // forced update
+      forcedUpdate = true;
+      updateMessage.textContent = "This version is no longer supported 😢";
+      closePopupBtn.style.display = 'none';
+      updateNowBtn.style.display = 'inline-block';
+      popupBackdrop.style.display = 'block';
+      updatePopup.style.display = 'block';
+    } else if(diff > 0){
+      forcedUpdate = false;
+      updateMessage.textContent = data.message || ("New version available: " + data.version);
+      closePopupBtn.style.display = 'inline-block';
+      updateNowBtn.style.display = 'inline-block';
+      popupBackdrop.style.display = 'block';
+      updatePopup.style.display = 'block';
+    } else {
+      // no update needed; hide anything leftover
+      popupBackdrop.style.display = 'none';
+      updatePopup.style.display = 'none';
     }
-  }catch(e){console.error(e);}
-}
-function closeUpdatePopup(){
-  if(forcedUpdate){
-    document.body.innerHTML="<h2 style='color:white;text-align:center;margin-top:20%'>Unsupported Version 😢</h2>";
-  } else {
-    document.getElementById("updatePopup").style.display="none";
-    document.getElementById("popupBackdrop").style.display="none";
+  }catch(e){
+    console.error("Update check failed", e);
   }
 }
-function updateNow(){window.location.href=updatePage;}
+/* popup actions */
+closePopupBtn.addEventListener('click', ()=> {
+  if(forcedUpdate){
+    document.body.innerHTML = "<h2 style='color:white;text-align:center;margin-top:20%'>Unsupported Version 😢</h2>";
+  } else {
+    updatePopup.style.display = 'none';
+    popupBackdrop.style.display = 'none';
+  }
+});
+updateNowBtn.addEventListener('click', ()=> {
+  window.location.href = updatePage;
+});
 
-window.onload=()=>{
-  const savedTheme=localStorage.getItem("theme")||"dark";
-  setTheme(savedTheme);
-  const lastSite=localStorage.getItem("lastSite")||allowedDomain+"/index.html";
-  loadURL(lastSite);
-  checkForUpdates();
-};
+/* ===== INIT: restore theme & lastSite; show welcome if no last site ===== */
+window.addEventListener('load', ()=>{
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  applyTheme(savedTheme);
+
+  // set theme select value
+  themeSelect.value = savedTheme;
+
+  // restore last site; if lastSite is default blank -> show welcome
+  const lastSite = localStorage.getItem('lastSite');
+  if(lastSite && isAllowed(lastSite)){
+    // load last site but show loader
+    showLoader("Restoring last site…");
+    loadURL(lastSite);
+  } else {
+    // show welcome card
+    welcome.style.display = 'flex';
+    iframe.src = 'about:blank';
+    urlDisplay.value = allowedDomain + '/index.html';
+  }
+
+  // run update check after short delay
+  setTimeout(checkForUpdates, 600);
+});
 </script>
 </body>
 </html>
