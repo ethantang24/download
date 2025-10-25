@@ -112,7 +112,7 @@ footer {
 
 <iframe id="browserFrame"></iframe>
 
-<footer>ethan browser v1.0.1</footer>
+<footer>ethan browser v1.0.3</footer>
 
 <!-- Update Popup -->
 <div id="popupBackdrop"></div>
@@ -131,9 +131,9 @@ const iframe = document.getElementById("browserFrame");
 const urlDisplay = document.getElementById("urlDisplay");
 const homePage = allowedDomain + "/index.html";
 
-// 🧠 Prevent recursion (browser never iframes itself)
-if (window.top !== window.self) {
-  window.top.location.href = allowedDomain + "/index.html";
+// 🧠 Only redirect if this page is loaded *inside* an iframe
+if (window.self !== window.top && window.location.href.includes("browser")) {
+  window.top.location.href = homePage;
 }
 
 // === Navigation ===
