@@ -45,8 +45,9 @@ header button:hover { background:rgba(255,255,255,0.2); }
   border-radius:8px;
   border:none;
   background:rgba(255,255,255,0.1);
-  color:#ccc;
+  color:var(--fg);
   pointer-events:none;
+  transition:color 0.6s ease;
 }
 iframe {
   flex:1;
@@ -57,8 +58,9 @@ footer {
   text-align:center;
   padding:4px;
   font-size:12px;
-  color:#aaa;
+  color:var(--fg);
   background:var(--header);
+  transition:color 0.6s ease;
 }
 
 /* Settings popup */
@@ -138,12 +140,8 @@ footer {
   font-weight:500;
   transition:background 0.3s ease;
 }
-#closePopupBtn {
-  background:#555;
-}
-#updateNowBtn {
-  background:#007bff;
-}
+#closePopupBtn { background:#555; }
+#updateNowBtn { background:#007bff; }
 #closePopupBtn:hover { background:#777; }
 #updateNowBtn:hover { background:#1493ff; }
 
@@ -213,10 +211,12 @@ function loadURL(url){
     alert("You can only browse ethanytangcodes.github.io!");
     return;
   }
-  localStorage.setItem("lastSite", url);
   const iframe=document.getElementById("browserFrame");
   iframe.src=url;
-  document.getElementById("urlDisplay").value=url;
+  iframe.onload = () => {
+    document.getElementById("urlDisplay").value=url;
+    localStorage.setItem("lastSite", url);
+  };
 }
 
 // === Theme Control ===
@@ -224,66 +224,72 @@ function setTheme(theme){
   const root=document.documentElement;
   localStorage.setItem("theme",theme);
 
-  let bgColor = "#111"; // fallback
+  let bgColor = "#111"; // fallback solid color for luminance
   let font = "'Poppins', sans-serif";
+  let background = bgColor;
 
   switch(theme){
     case"dark":
       bgColor="#111";
+      background=bgColor;
       font="'Poppins', sans-serif";
       break;
     case"gradient":
-      bgColor="#ff6ec4"; // pick main color for luminance check
+      bgColor="#ff6ec4";
+      background="linear-gradient(135deg,#ff6ec4,#7873f5)";
       font="'Raleway', sans-serif";
-      root.style.setProperty("--bg","linear-gradient(135deg,#ff6ec4,#7873f5)");
       break;
     case"frosty":
       bgColor="#f0f0ff";
+      background=bgColor;
       font="'Roboto', sans-serif";
       break;
     case"sunset":
       bgColor="#ff9966";
+      background="linear-gradient(120deg,#ff9966,#ff5e62)";
       font="'Raleway', sans-serif";
-      root.style.setProperty("--bg","linear-gradient(120deg,#ff9966,#ff5e62)");
       break;
     case"neon":
       bgColor="#00f260";
+      background="linear-gradient(135deg,#00f260,#0575e6)";
       font="'Orbitron', sans-serif";
-      root.style.setProperty("--bg","linear-gradient(135deg,#00f260,#0575e6)");
       break;
     case"aqua":
       bgColor="#00d2ff";
+      background="linear-gradient(135deg,#00d2ff,#3a7bd5)";
       font="'Roboto', sans-serif";
-      root.style.setProperty("--bg","linear-gradient(135deg,#00d2ff,#3a7bd5)");
       break;
     case"fire":
       bgColor="#ff416c";
+      background="linear-gradient(135deg,#ff416c,#ff4b2b)";
       font="'Press Start 2P', cursive";
-      root.style.setProperty("--bg","linear-gradient(135deg,#ff416c,#ff4b2b)");
       break;
     case"lavender":
       bgColor="#c471ed";
+      background="linear-gradient(135deg,#c471ed,#f64f59)";
       font="'Raleway', sans-serif";
-      root.style.setProperty("--bg","linear-gradient(135deg,#c471ed,#f64f59)");
       break;
   }
 
-  // Set font
+  root.style.setProperty("--bg", background);
   root.style.setProperty("--font", font);
 
   // Calculate luminance to auto-set font color
   const rgb = hexToRgb(bgColor);
   const luminance = (0.299*rgb.r + 0.587*rgb.g + 0.114*rgb.b)/255;
-  const fgColor = luminance > 0.5 ? "#111" : "#fff"; // light bg → dark font, dark bg → light font
+  const fgColor = luminance > 0.5 ? "#111" : "#fff";
   root.style.setProperty("--fg", fgColor);
+
+  document.body.style.background = background;
+  document.body.style.color = fgColor;
+  document.querySelector("footer").style.color = fgColor;
+  document.getElementById("urlDisplay").style.color = fgColor;
 }
 
-// Helper function to convert HEX to RGB
+// Helper HEX → RGB
 function hexToRgb(hex) {
   hex = hex.replace(/^#/, '');
-  if(hex.length===3){
-    hex=hex.split('').map(x=>x+x).join('');
-  }
+  if(hex.length===3){ hex=hex.split('').map(x=>x+x).join(''); }
   const num=parseInt(hex,16);
   return { r:(num>>16)&255, g:(num>>8)&255, b:num&255 };
 }
@@ -337,8 +343,8 @@ function closeUpdatePopup(){
 function updateNow(){window.location.href=updatePage;}
 
 window.onload=()=>{
-  const savedTheme=localStorage.getItem("theme");
-  if(savedTheme)setTheme(savedTheme);
+  const savedTheme=localStorage.getItem("theme")||"dark";
+  setTheme(savedTheme);
   const lastSite=localStorage.getItem("lastSite")||allowedDomain+"/index.html";
   loadURL(lastSite);
   checkForUpdates();
