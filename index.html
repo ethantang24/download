@@ -1,257 +1,183 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>downloads</title>
-  <style>
-    @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ethan Browser</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #111;
+  --fg: #fff;
+  --header: rgba(255,255,255,0.05);
+  --font: 'Poppins', sans-serif;
+}
+body {
+  margin: 0;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--fg);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+header {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  background: var(--header);
+  backdrop-filter: blur(5px);
+}
+header button {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.1);
+  color: var(--fg);
+  cursor: pointer;
+}
+header button:hover { background: rgba(255,255,255,0.2); }
+#urlDisplay {
+  flex: 1;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(255,255,255,0.1);
+  color: #ccc;
+  pointer-events: none;
+}
+iframe {
+  flex: 1;
+  border: none;
+  width: 100%;
+}
+footer {
+  text-align: center;
+  padding: 5px;
+  font-size: 12px;
+  color: #aaa;
+  background: var(--header);
+}
 
-    * {
-      box-sizing: border-box;
-      font-family: "Poppins", sans-serif;
-    }
-
-    body {
-      margin: 0;
-      padding: 2rem;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      background: radial-gradient(circle at top left, #4f46e5, #9333ea, #111);
-      color: #fff;
-      overflow-x: hidden;
-    }
-
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 0.5rem;
-      background: linear-gradient(90deg, #a78bfa, #c084fc, #f472b6);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-align: center;
-      letter-spacing: 1px;
-      animation: glow 2s ease-in-out infinite alternate;
-    }
-
-    @keyframes glow {
-      from {
-        text-shadow: 0 0 10px #c084fc, 0 0 20px #a78bfa;
-      }
-      to {
-        text-shadow: 0 0 20px #f472b6, 0 0 40px #c084fc;
-      }
-    }
-
-    .search-container {
-      position: relative;
-      margin: 1.5rem 0 2rem 0;
-      width: 100%;
-      max-width: 600px;
-    }
-
-    input[type="text"] {
-      width: 100%;
-      padding: 1rem 1.2rem;
-      border-radius: 1rem;
-      border: none;
-      outline: none;
-      font-size: 1rem;
-      color: #fff;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(12px);
-      transition: all 0.3s ease;
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
-    }
-
-    input[type="text"]:focus {
-      background: rgba(255, 255, 255, 0.2);
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
-      transform: scale(1.02);
-    }
-
-    input[type="text"]::placeholder {
-      color: rgba(255, 255, 255, 0.7);
-    }
-
-    .file-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.2rem;
-      width: 100%;
-      max-width: 1000px;
-    }
-
-    .file-card {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 1.2rem;
-      padding: 1.4rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: all 0.3s ease;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .file-card::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 200%;
-      height: 100%;
-      background: linear-gradient(
-        120deg,
-        transparent,
-        rgba(255, 255, 255, 0.15),
-        transparent
-      );
-      transition: 0.5s;
-    }
-
-    .file-card:hover::before {
-      left: 100%;
-    }
-
-    .file-card:hover {
-      transform: translateY(-6px) scale(1.02);
-      background: rgba(255, 255, 255, 0.2);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-    }
-
-    .file-name {
-      font-weight: 600;
-      font-size: 1.05rem;
-      text-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
-    }
-
-    button {
-      background: linear-gradient(135deg, #a78bfa, #c084fc, #f472b6);
-      color: #fff;
-      border: none;
-      padding: 0.6rem 1.2rem;
-      border-radius: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.25s ease;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
-    }
-
-    button:hover {
-      transform: scale(1.08);
-      box-shadow: 0 0 20px rgba(240, 171, 252, 0.4);
-    }
-
-    .no-results {
-      text-align: center;
-      margin-top: 2rem;
-      font-size: 1.2rem;
-      opacity: 0.8;
-      animation: fadeIn 0.3s ease-in;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
-    }
-
-    footer {
-      margin-top: auto;
-      padding: 2rem;
-      text-align: center;
-      font-size: 0.9rem;
-      opacity: 0.6;
-    }
-
-    footer:hover {
-      opacity: 1;
-      transition: 0.3s;
-    }
-  </style>
+/* Update popup */
+#popupBackdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(3px);
+  z-index: 999;
+}
+#updatePopup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  background: rgba(25,25,25,0.95);
+  border-radius: 16px;
+  padding: 25px 30px;
+  box-shadow: 0 0 40px rgba(0,0,0,0.6);
+  width: 320px;
+  text-align: center;
+  display: none;
+  flex-direction: column;
+  gap: 15px;
+  color: white;
+  z-index: 1000;
+}
+#updatePopup button {
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  cursor: pointer;
+  color: white;
+  font-weight: 500;
+  background: #007bff;
+}
+#updatePopup button:hover { background: #1493ff; }
+</style>
 </head>
 <body>
-  <h1>downloads</h1>
-  <p>dont worry its not a virus</p>
-  <p>by downloading you agree to the terms of service</p>
-  <p>pro tip: downloading lets you bypass Securly classroom 👀</p>
-  <p>use wisely!</p>
-  <h3>please suggest games</h3>
-  <a href="https://forms.gle/UzH7pZW91GNKVX8U8">suggest games here</a>
 
-  <div class="search-container">
-    <input type="text" id="search" placeholder="search files" />
-  </div>
+<header>
+  <button onclick="goBack()">←</button>
+  <button onclick="goHome()">🏠</button>
+  <input id="urlDisplay" readonly>
+</header>
 
-  <div class="file-list" id="fileList">
-    <div class="file-card">
-      <div class="file-name">retro bowl</div>
-      <button data-link="https://raw.githubusercontent.com/ethanytangcodes/download/refs/heads/main/files/retrobowl.html">Download</button>
-    </div>
-    <div class="file-card">
-      <div class="file-name">my site(but it cant be seen on securly!)</div>
-      <button data-link="https://raw.githubusercontent.com/ethanytangcodes/download/refs/heads/main/files/browser.html">Download</button>
-    </div>
-  </div>
+<iframe id="browserFrame" src=""></iframe>
 
-  <p id="noResults" class="no-results" style="display:none;">No matching files found</p>
+<footer>ethan browser v1.0.1</footer>
 
-  <footer>Built by Ethan Tang</footer>
+<div id="popupBackdrop"></div>
+<div id="updatePopup">
+  <h2>🔔 Update Available</h2>
+  <p id="updateMessage"></p>
+  <button id="updateNowBtn" onclick="updateNow()">Update</button>
+</div>
 
-  <script>
-    // Force download behavior
-    document.querySelectorAll("button").forEach(btn => {
-      btn.addEventListener("click", async () => {
-        const fileUrl = btn.dataset.link;
-        const fileName = fileUrl.split("/").pop();
+<script>
+const currentVersion = "1.0.1";
+const workerURL = "https://browserupdate.ethantytang11.workers.dev/version";
+const allowedDomain = "https://ethanytangcodes.github.io";
+const updatePage = allowedDomain + "/download";
+const iframe = document.getElementById("browserFrame");
+const urlDisplay = document.getElementById("urlDisplay");
 
-        try {
-          const response = await fetch(fileUrl);
-          const blob = await response.blob();
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = fileName;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          window.URL.revokeObjectURL(url);
-        } catch (err) {
-          alert("❌ Failed to download file: " + err.message);
-        }
-      });
-    });
+// === Navigation ===
+function goBack() {
+  iframe.contentWindow.history.back();
+}
 
-    // Search filter
-    const searchInput = document.getElementById("search");
-    const fileCards = document.querySelectorAll(".file-card");
-    const noResults = document.getElementById("noResults");
+function goHome() {
+  loadURL(allowedDomain + "/index.html");
+}
 
-    searchInput.addEventListener("input", () => {
-      const query = searchInput.value.toLowerCase();
-      let visibleCount = 0;
+// === Load & Save ===
+function loadURL(url) {
+  if (!url.startsWith(allowedDomain)) {
+    alert("You can only browse ethanytangcodes.github.io!");
+    return;
+  }
+  iframe.src = url;
+  localStorage.setItem("lastSite", url);
+  urlDisplay.value = url;
+}
 
-      fileCards.forEach(card => {
-        const name = card.querySelector(".file-name").textContent.toLowerCase();
-        if (name.includes(query)) {
-          card.style.display = "flex";
-          visibleCount++;
-        } else {
-          card.style.display = "none";
-        }
-      });
+// === Fix iframe recursion issue ===
+if (window.top !== window.self) {
+  window.top.location.href = window.location.href;
+}
 
-      noResults.style.display = visibleCount === 0 ? "block" : "none";
-    });
-  </script>
+// === Update Checker ===
+async function checkForUpdates() {
+  try {
+    const res = await fetch(workerURL);
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data.version !== currentVersion) {
+      document.getElementById("popupBackdrop").style.display = "block";
+      document.getElementById("updatePopup").style.display = "flex";
+      document.getElementById("updateMessage").innerText =
+        data.message || "A new version is available!";
+    }
+  } catch (err) {
+    console.error("Update check failed:", err);
+  }
+}
+
+function updateNow() {
+  window.location.href = updatePage;
+}
+
+// === Initialize ===
+window.onload = () => {
+  const lastSite = localStorage.getItem("lastSite") || allowedDomain + "/index.html";
+  loadURL(lastSite);
+  checkForUpdates();
+};
+</script>
+
 </body>
 </html>
