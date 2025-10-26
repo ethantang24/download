@@ -1,255 +1,278 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ethan Browser</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Ethan Browser — Minimal</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:#111;
-  --fg:#fff;
-  --header:rgba(255,255,255,0.08);
-}
-body {
-  margin:0;
-  font-family:'Poppins', sans-serif;
-  background:var(--bg);
-  color:var(--fg);
-  height:100vh;
-  display:flex;
-  flex-direction:column;
-  transition:0.3s ease;
-}
+  :root{
+    --bg:#0b0b0d; --panel:#0f0f12; --muted:#9aa0a6; --fg:#fff;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:"Poppins",sans-serif;
+    background:var(--bg);
+    color:var(--fg);
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+    overflow:hidden;
+  }
 
-/* Header */
-header {
-  display:flex;
-  align-items:center;
-  gap:8px;
-  padding:8px 12px;
-  background:var(--header);
-  backdrop-filter:blur(8px);
-}
-header button {
-  padding:6px 10px;
-  background:rgba(255,255,255,0.1);
-  color:var(--fg);
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-  transition:background 0.3s ease;
-}
-header button:hover {
-  background:rgba(255,255,255,0.25);
-}
-#urlBar {
-  flex:1;
-  border:none;
-  background:rgba(255,255,255,0.1);
-  color:#ccc;
-  padding:6px 10px;
-  border-radius:8px;
-  pointer-events:none;
-}
+  header{
+    display:flex;
+    gap:8px;
+    align-items:center;
+    padding:10px;
+    background:rgba(255,255,255,0.02);
+    backdrop-filter:blur(6px);
+  }
+  .btn{
+    background:rgba(255,255,255,0.06);
+    color:var(--fg);
+    border:0;
+    padding:8px 12px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:600;
+  }
+  .btn:hover{ background:rgba(255,255,255,0.12) }
 
-/* Iframe */
-iframe {
-  flex:1;
-  width:100%;
-  border:none;
-}
+  #urlBar{
+    flex:1;
+    padding:8px 12px;
+    border-radius:8px;
+    border:0;
+    background:rgba(255,255,255,0.04);
+    color:#cfcfcf;
+    pointer-events:none;
+    user-select:none;
+    font-size:14px;
+    opacity:0.9;
+  }
 
-/* Footer */
-footer {
-  text-align:center;
-  padding:6px;
-  font-size:12px;
-  background:var(--header);
-  color:#aaa;
-}
+  main{flex:1;position:relative;display:flex;flex-direction:column}
+  iframe{flex:1;border:0;width:100%;height:100%;background:white}
 
-/* Loading Screen */
-#loadingScreen {
-  position:fixed;
-  inset:0;
-  background:#111;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
-  color:#fff;
-  z-index:999;
-  font-family:'Poppins',sans-serif;
-  transition:opacity 0.5s ease;
-}
-.loader {
-  width:40px;
-  height:40px;
-  border:4px solid rgba(255,255,255,0.3);
-  border-top-color:#fff;
-  border-radius:50%;
-  animation:spin 1s linear infinite;
-}
-@keyframes spin {
-  to { transform:rotate(360deg); }
-}
+  /* loading overlay */
+  #loadingOverlay{
+    position:fixed;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    gap:10px;
+    background:rgba(0,0,0,0.75);
+    z-index:60;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .22s ease;
+  }
+  #loadingOverlay.active{opacity:1;pointer-events:auto}
+  .spinner{ width:44px; height:44px; border-radius:50%; border:4px solid rgba(255,255,255,0.14); border-top-color:#fff; animation:spin .9s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg) } }
 
-/* Update Popup */
-#updatePopup {
-  position:fixed;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  background:#222;
-  color:white;
-  border-radius:12px;
-  padding:25px 30px;
-  box-shadow:0 0 30px rgba(0,0,0,0.5);
-  text-align:center;
-  display:none;
-  z-index:1000;
-  width:300px;
-}
-#updatePopup h2 {
-  margin:0 0 10px;
-}
-#updatePopup button {
-  margin-top:10px;
-  padding:8px 14px;
-  border:none;
-  border-radius:8px;
-  background:#007bff;
-  color:white;
-  cursor:pointer;
-  transition:background 0.3s ease;
-}
-#updatePopup button:hover {
-  background:#1493ff;
-}
+  /* update modal */
+  #modalBackdrop{ position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:65; display:none; }
+  #updateModal{
+    position:fixed; left:50%; top:50%; transform:translate(-50%,-50%);
+    background:var(--panel); color:var(--fg); padding:18px; border-radius:12px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.6); z-index:70; display:none; min-width:300px;
+  }
+  #updateModal h3{ margin:0 0 8px 0; font-size:18px; }
+  .modal-actions{ display:flex; gap:8px; justify-content:flex-end; margin-top:12px; }
+  .modal-actions button{ padding:8px 12px; border-radius:8px; border:0; cursor:pointer; }
+  .primary{ background:#0b84ff; color:white; }
+  .ghost{ background:#444; color:white; }
+
+  footer{
+    padding:8px 12px;
+    background:rgba(255,255,255,0.02);
+    color:var(--muted);
+    font-size:13px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
 </style>
 </head>
 <body>
 
 <header>
-  <button onclick="goHome()">🏠 Home</button>
-  <button onclick="goGames()">🎮 Games</button>
-  <input id="urlBar" readonly value="Loading...">
+  <button id="homeBtn" class="btn" title="Home">🏠 Home</button>
+  <button id="gamesBtn" class="btn" title="Games">🎮 Games</button>
+  <input id="urlBar" readonly placeholder="">
 </header>
 
-<iframe id="browserFrame"></iframe>
+<main>
+  <iframe id="webFrame"></iframe>
+</main>
 
-<footer>ethan browser v1.0.1</footer>
+<footer>
+  <div id="status">● Checking…</div>
+  <div>ethan browser v1.0.2</div>
+</footer>
 
-<!-- Loading screen -->
-<div id="loadingScreen">
-  <div class="loader"></div>
-  <p style="margin-top:10px;">Loading...</p>
+<!-- Loading overlay -->
+<div id="loadingOverlay" aria-hidden="true">
+  <div class="spinner" role="progressbar" aria-label="Loading"></div>
+  <div id="loadingText">Loading…</div>
 </div>
 
 <!-- Update modal -->
-<div id="updatePopup">
-  <h2>🔔 Browser Update</h2>
-  <p id="updateMessage"></p>
-  <button id="updateBtn" onclick="updateNow()">Update</button>
-  <button id="closeUpdateBtn" onclick="closeUpdate()">Close</button>
+<div id="modalBackdrop"></div>
+<div id="updateModal" role="dialog" aria-modal="true">
+  <h3>🔔 Browser Announcement</h3>
+  <div id="updateMessage">Checking for updates…</div>
+  <div class="modal-actions" id="modalButtons"></div>
 </div>
 
 <script>
+/* ---------- CONFIG ---------- */
 const allowedDomain = "https://ethanytangcodes.github.io";
 const homepage = allowedDomain + "/index.html";
-const gamesPage = allowedDomain + "/art";
-const version = "1.0.1";
-const updateWorker = "https://browserupdate.ethantytang11.workers.dev/version";
+const gamesPage = allowedDomain + "/games.html"; // adjust if your games URL differs
+const workerURL = "https://browserupdate.ethantytang11.workers.dev/version";
+const currentVersion = "1.0.2";
 
-const iframe = document.getElementById("browserFrame");
+/* ---------- KEYS & STATE ---------- */
+const KEY_LAST = "ethan_lastPage_v1";
+
+/* ---------- ELEMENTS ---------- */
+const webFrame = document.getElementById("webFrame");
 const urlBar = document.getElementById("urlBar");
-const loadingScreen = document.getElementById("loadingScreen");
+const homeBtn = document.getElementById("homeBtn");
+const gamesBtn = document.getElementById("gamesBtn");
+const loadingOverlay = document.getElementById("loadingOverlay");
+const loadingText = document.getElementById("loadingText");
+const statusEl = document.getElementById("status");
+const modalBackdrop = document.getElementById("modalBackdrop");
+const updateModal = document.getElementById("updateModal");
+const updateMessage = document.getElementById("updateMessage");
+const modalButtons = document.getElementById("modalButtons");
 
-function showLoading(){
-  loadingScreen.style.display = "flex";
-  loadingScreen.style.opacity = "1";
+/* ---------- UTIL ---------- */
+function showLoading(text="Loading…"){
+  loadingText.textContent = text;
+  loadingOverlay.classList.add("active");
 }
 function hideLoading(){
-  loadingScreen.style.opacity = "0";
-  setTimeout(()=>loadingScreen.style.display="none",500);
+  loadingOverlay.classList.remove("active");
 }
-
-// --- URL handling ---
 function sanitizeUrl(url){
-  try {
+  if(!url) return homepage;
+  try{
     const u = new URL(url, homepage);
+    // allow only ethanytangcodes.github.io origin
     if(u.origin === new URL(allowedDomain).origin) return u.href;
     return homepage;
-  } catch {
+  }catch(e){
     return homepage;
   }
 }
-
-function displayUrlForUI(url){
+/* URL bar UI: blank unless on homepage/games */
+function updateUrlBarForUI(url){
+  if(!url) { urlBar.value = ""; return; }
   if(url === homepage) urlBar.value = "ethan://home";
-  else urlBar.value = new URL(url).pathname;
+  else if(url === gamesPage) urlBar.value = "ethan://games";
+  else urlBar.value = "";
 }
 
+/* ---------- NAV ---------- */
 function loadPage(url){
   const clean = sanitizeUrl(url);
+  console.log("[browser] loadPage ->", clean);
   showLoading();
-  iframe.src = clean;
-  displayUrlForUI(clean);
-  localStorage.setItem("ethan_lastPage", clean);
+  webFrame.src = clean;
+  updateUrlBarForUI(clean);
+  try{ localStorage.setItem(KEY_LAST, clean); console.log("[browser] saved lastPage:", clean); }catch(e){ console.warn("[browser] localStorage save failed", e); }
 }
 
-// --- Buttons ---
-function goHome(){ loadPage(homepage); }
-function goGames(){ loadPage(gamesPage); }
+/* buttons */
+homeBtn.addEventListener("click", ()=> loadPage(homepage));
+gamesBtn.addEventListener("click", ()=> loadPage(gamesPage));
 
-// --- On load ---
-let lastSite = localStorage.getItem("ethan_lastPage");
-if(!lastSite || !lastSite.startsWith(allowedDomain)) lastSite = homepage;
-loadPage(lastSite);
+/* iframe handlers */
+webFrame.addEventListener("load", () => {
+  // Wait briefly for nicer UX then hide loading
+  setTimeout(()=> {
+    hideLoading();
+    // log actual loaded src for debugging
+    try{ console.log("[browser] iframe loaded:", webFrame.contentWindow.location.href); }catch(e){ console.log("[browser] iframe loaded (cross-origin) src:", webFrame.src); }
+  }, 120);
+});
 
-// Hide loading when iframe loads
-iframe.addEventListener("load", hideLoading);
-
-// --- Update Modal ---
-async function checkUpdate(){
-  try {
-    const res = await fetch(updateWorker);
-    if(!res.ok) return;
-    const data = await res.json();
-    const diff = compareVersions(version, data.version);
-    const modal = document.getElementById("updatePopup");
-    const msg = document.getElementById("updateMessage");
-    const closeBtn = document.getElementById("closeUpdateBtn");
-    if(diff >= 20){
-      msg.innerText = "This version is outdated and must be updated.";
-      closeBtn.style.display = "none";
-      modal.style.display = "block";
-    } else if(diff > 0){
-      msg.innerText = data.message || "A new version is available!";
-      closeBtn.style.display = "inline-block";
-      modal.style.display = "block";
+/* ---------- INIT: restore last or home ---------- */
+(function init(){
+  console.log("[browser] init");
+  // ensure running on https, localStorage available
+  try{
+    const last = localStorage.getItem(KEY_LAST);
+    console.log("[browser] last from localStorage:", last);
+    if(last && typeof last === "string" && last.startsWith(allowedDomain)){
+      loadPage(last);
+    } else {
+      console.log("[browser] no valid last saved, loading homepage");
+      loadPage(homepage);
     }
-  } catch (err) {
-    console.error("Update check failed", err);
+  }catch(e){
+    console.warn("[browser] localStorage read error:", e);
+    loadPage(homepage);
+  }
+})();
+
+/* ---------- ONLINE STATUS ---------- */
+function updateOnlineStatus(){
+  statusEl.textContent = navigator.onLine ? "● Online" : "● Offline";
+  statusEl.style.color = navigator.onLine ? "#7fffb0" : "#ff7b7b";
+}
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+updateOnlineStatus();
+
+/* ---------- UPDATE CHECK (modal) ---------- */
+async function checkForUpdates(){
+  try{
+    const res = await fetch(workerURL, { cache: "no-store" });
+    if(!res.ok) { console.warn("[browser] update fetch failed:", res.status); return; }
+    const data = await res.json();
+    console.log("[browser] update data:", data);
+    const remote = String(data.version || "0.0.0");
+    function parseVer(v){ return v.split(".").map(n=>parseInt(n||0)); }
+    const a = parseVer(currentVersion);
+    const b = parseVer(remote);
+    const diff = (b[0]-a[0])*100 + (b[1]-a[1])*10 + (b[2]-a[2] || 0);
+    if(diff > 0){
+      updateMessage.textContent = data.message || ("New version: " + remote);
+      modalButtons.innerHTML = "";
+      if(diff >= 20){
+        // forced update: only update button
+        const u = document.createElement("button"); u.className = "primary"; u.textContent = "Update Now";
+        u.onclick = ()=> { window.location.href = allowedDomain + "/download"; };
+        modalButtons.appendChild(u);
+      } else {
+        // optional: update + close
+        const u = document.createElement("button"); u.className = "primary"; u.textContent = "Update";
+        u.onclick = ()=> { window.location.href = allowedDomain + "/download"; };
+        const c = document.createElement("button"); c.className = "ghost"; c.textContent = "Close";
+        c.onclick = ()=> { updateModal.style.display = "none"; modalBackdrop.style.display = "none"; };
+        modalButtons.appendChild(u); modalButtons.appendChild(c);
+      }
+      modalBackdrop.style.display = "block";
+      updateModal.style.display = "block";
+    }
+  }catch(e){
+    console.warn("[browser] update check error:", e);
   }
 }
+checkForUpdates();
+/* poll every 10 minutes */
+setInterval(checkForUpdates, 10 * 60 * 1000);
 
-function compareVersions(v1, v2){
-  const a = v1.split(".").map(Number);
-  const b = v2.split(".").map(Number);
-  return (b[0]-a[0])*100 + (b[1]-a[1])*10 + (b[2]-a[2]);
-}
-
-function updateNow(){
-  window.location.href = allowedDomain + "/download";
-}
-function closeUpdate(){
-  document.getElementById("updatePopup").style.display = "none";
-}
-
-checkUpdate();
 </script>
-
 </body>
 </html>
