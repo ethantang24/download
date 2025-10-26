@@ -38,9 +38,7 @@ header button {
   cursor: pointer;
   transition: background 0.3s;
 }
-header button:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
+header button:hover { background: rgba(255,255,255,0.2); }
 #urlBar {
   flex: 1;
   padding: 6px 12px;
@@ -49,6 +47,7 @@ header button:hover {
   background: rgba(255, 255, 255, 0.1);
   color: #ccc;
   pointer-events: none;
+  value: "";
 }
 iframe {
   flex: 1;
@@ -63,7 +62,7 @@ footer {
   background: var(--header);
 }
 
-/* Loading screen */
+/* Loading overlay */
 #loadingOverlay {
   position: fixed;
   inset: 0;
@@ -88,8 +87,8 @@ footer {
 }
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-/* Update Modal */
-#modalBackdrop {
+/* Modals */
+.modalBackdrop {
   display: none;
   position: fixed;
   inset: 0;
@@ -97,7 +96,7 @@ footer {
   backdrop-filter: blur(4px);
   z-index: 1000;
 }
-#updateModal {
+.modalWindow {
   display: none;
   position: fixed;
   top: 50%;
@@ -112,8 +111,9 @@ footer {
   z-index: 1001;
   text-align: center;
 }
-#updateModal h2 { margin-top: 0; }
-#updateModal button {
+.modalWindow h2 { margin-top: 0; }
+.modalWindow p { margin: 10px 0; }
+.modalWindow button {
   margin: 5px;
   padding: 8px 14px;
   border: none;
@@ -128,10 +128,11 @@ button.ghost:hover { background: #777; }
 </style>
 </head>
 <body>
+
 <header>
   <button id="homeBtn">🏠 Home</button>
   <button id="gamesBtn">🎮 Games</button>
-  <input id="urlBar" readonly value="https://ethanytangcodes.github.io">
+  <input id="urlBar" readonly placeholder="">
 </header>
 
 <div id="loadingOverlay">
@@ -141,14 +142,22 @@ button.ghost:hover { background: #777; }
 
 <iframe id="webFrame"></iframe>
 
-<footer>ethan browser v1.0.1</footer>
+<footer>Made by Ethan Tang v1.0.1</footer>
+
+<!-- Welcome Modal -->
+<div id="welcomeBackdrop" class="modalBackdrop"></div>
+<div id="welcomeModal" class="modalWindow">
+  <h2>Welcome!</h2>
+  <p>i know ur just trying to kill time in class</p>
+  <button class="primary" onclick="closeWelcome()">lets go!</button>
+</div>
 
 <!-- Update Modal -->
-<div id="modalBackdrop"></div>
-<div id="updateModal">
+<div id="updateBackdrop" class="modalBackdrop"></div>
+<div id="updateModal" class="modalWindow">
   <h2>🔔 Browser Update</h2>
   <p id="updateMessage"></p>
-  <div id="modalButtons"></div>
+  <div id="updateButtons"></div>
 </div>
 
 <script>
@@ -157,7 +166,6 @@ const homepage = allowedDomain + "/index.html";
 const gamesPage = allowedDomain + "/art";
 const workerURL = "https://browserupdate.ethantytang11.workers.dev/version";
 const currentVersion = "1.0.1";
-const KEY_LAST = "ethan_lastPage_v1";
 
 const webFrame = document.getElementById("webFrame");
 const urlBar = document.getElementById("urlBar");
@@ -165,91 +173,63 @@ const homeBtn = document.getElementById("homeBtn");
 const gamesBtn = document.getElementById("gamesBtn");
 const loadingOverlay = document.getElementById("loadingOverlay");
 const loadingText = document.getElementById("loadingText");
-const modalBackdrop = document.getElementById("modalBackdrop");
+
+const welcomeBackdrop = document.getElementById("welcomeBackdrop");
+const welcomeModal = document.getElementById("welcomeModal");
+
+const updateBackdrop = document.getElementById("updateBackdrop");
 const updateModal = document.getElementById("updateModal");
 const updateMessage = document.getElementById("updateMessage");
-const modalButtons = document.getElementById("modalButtons");
+const updateButtons = document.getElementById("updateButtons");
 
-function showLoading(text = "Loading…") {
-  loadingText.textContent = text;
-  loadingOverlay.classList.add("active");
-}
-function hideLoading() {
-  loadingOverlay.classList.remove("active");
-}
-function sanitizeUrl(url) {
-  try {
-    const u = new URL(url, homepage);
-    if (u.origin === new URL(allowedDomain).origin) return u.href;
-    return homepage;
-  } catch { return homepage; }
-}
-function updateUrlBarUI(url) {
-  urlBar.value = url;
-}
-function loadPage(url) {
+function showLoading(text="Loading…"){ loadingText.textContent=text; loadingOverlay.classList.add("active"); }
+function hideLoading(){ loadingOverlay.classList.remove("active"); }
+
+function sanitizeUrl(url){ try { const u = new URL(url, homepage); if(u.origin===new URL(allowedDomain).origin) return u.href; return homepage; } catch{ return homepage; } }
+function updateUrlBarUI(url){ urlBar.value = ""; } // Keep search bar blank
+
+function loadPage(url){
   const clean = sanitizeUrl(url);
   showLoading();
   webFrame.src = clean;
   updateUrlBarUI(clean);
-  localStorage.setItem(KEY_LAST, clean);
 }
-homeBtn.addEventListener("click", () => loadPage(homepage));
-gamesBtn.addEventListener("click", () => loadPage(gamesPage));
+homeBtn.addEventListener("click", ()=>loadPage(homepage));
+gamesBtn.addEventListener("click", ()=>loadPage(gamesPage));
+webFrame.addEventListener("load", ()=>hideLoading());
 
-webFrame.addEventListener("load", () => {
-  hideLoading();
-  const current = webFrame.src;
-  if (current.startsWith(allowedDomain)) {
-    localStorage.setItem(KEY_LAST, current);
-    updateUrlBarUI(current);
-  }
-});
+function showWelcome(){ welcomeBackdrop.style.display="block"; welcomeModal.style.display="block"; }
+function closeWelcome(){ welcomeBackdrop.style.display="none"; welcomeModal.style.display="none"; checkForUpdates(); }
 
-// === Version Check ===
+// Version check
 async function checkForUpdates() {
   try {
     const res = await fetch(workerURL);
-    if (!res.ok) return;
+    if(!res.ok) return;
     const data = await res.json();
     const latest = data.version;
     const diff = versionDiff(currentVersion, latest);
-
-    if (diff > 0) {
-      updateMessage.textContent = data.message || `A new version (${latest}) is available!`;
-      modalButtons.innerHTML = `
-        ${diff >= 20 ? '' : '<button class="ghost" onclick="closeUpdate()">Close</button>'}
+    if(diff>0){
+      updateMessage.textContent = data.message||`New version ${latest} available!`;
+      updateButtons.innerHTML = `
+        ${diff<20?'<button class="ghost" onclick="closeUpdate()">Close</button>':''}
         <button class="primary" onclick="updateNow()">Update</button>
       `;
-      modalBackdrop.style.display = "block";
-      updateModal.style.display = "block";
+      updateBackdrop.style.display="block";
+      updateModal.style.display="block";
     }
-  } catch (e) {
-    console.error("Update check failed", e);
-  }
+  } catch(e){ console.error(e);}
 }
-function versionDiff(v1, v2) {
-  const a = v1.split('.').map(Number);
-  const b = v2.split('.').map(Number);
-  return (b[0] - a[0]) * 100 + (b[1] - a[1]) * 10 + (b[2] - a[2]);
+function versionDiff(v1,v2){ 
+  const a=v1.split('.').map(Number), b=v2.split('.').map(Number);
+  return (b[0]-a[0])*100 + (b[1]-a[1])*10 + (b[2]-a[2]);
 }
-function closeUpdate() {
-  modalBackdrop.style.display = "none";
-  updateModal.style.display = "none";
-}
-function updateNow() {
-  window.location.href = allowedDomain + "/download";
-}
+function closeUpdate(){ updateBackdrop.style.display="none"; updateModal.style.display="none"; }
+function updateNow(){ window.location.href=allowedDomain+"/download"; }
 
-// === Init ===
-window.onload = () => {
-  const last = localStorage.getItem(KEY_LAST);
-  if (last && last.startsWith(allowedDomain)) {
-    loadPage(last);
-  } else {
-    loadPage(homepage);
-  }
-  checkForUpdates();
+window.onload = ()=>{
+  loadPage(homepage);
+  showWelcome();
 };
 </script>
 </body>
