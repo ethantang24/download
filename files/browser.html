@@ -2,145 +2,254 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ethan Browser</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  :root {--bg:#0b0b0d; --panel:#111; --muted:#9aa0a6; --fg:#fff;}
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{margin:0;font-family:"Poppins",sans-serif;display:flex;flex-direction:column;background:var(--bg);color:var(--fg);overflow:hidden;}
-  header{display:flex;align-items:center;padding:10px;background:rgba(255,255,255,0.02);backdrop-filter:blur(6px);}
-  .btn{background:rgba(255,255,255,0.06);color:var(--fg);border:0;padding:8px 12px;border-radius:8px;cursor:pointer;}
-  .btn:hover{background:rgba(255,255,255,0.1);}
-  #urlBar{flex:1;padding:8px 12px;border-radius:8px;border:0;background:rgba(255,255,255,0.04);color:#cfcfcf;pointer-events:none;user-select:none;font-size:14px;opacity:0.8;}
-  main{flex:1;position:relative;display:flex;flex-direction:column;}
-  iframe{flex:1;border:0;width:100%;height:100%;}
-  #loadingOverlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;background:rgba(0,0,0,0.7);z-index:40;opacity:0;pointer-events:none;transition:opacity .22s ease;}
-  #loadingOverlay.active{opacity:1;pointer-events:auto;}
-  .spinner{width:44px;height:44px;border-radius:50%;border:4px solid rgba(255,255,255,0.14);border-top-color:#fff;animation:spin .9s linear infinite;}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  footer{padding:8px 12px;background:rgba(255,255,255,0.02);color:var(--muted);font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+:root {
+  --bg:#111;
+  --fg:#fff;
+  --header:rgba(255,255,255,0.08);
+}
+body {
+  margin:0;
+  font-family:'Poppins', sans-serif;
+  background:var(--bg);
+  color:var(--fg);
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  transition:0.3s ease;
+}
+
+/* Header */
+header {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 12px;
+  background:var(--header);
+  backdrop-filter:blur(8px);
+}
+header button {
+  padding:6px 10px;
+  background:rgba(255,255,255,0.1);
+  color:var(--fg);
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  transition:background 0.3s ease;
+}
+header button:hover {
+  background:rgba(255,255,255,0.25);
+}
+#urlBar {
+  flex:1;
+  border:none;
+  background:rgba(255,255,255,0.1);
+  color:#ccc;
+  padding:6px 10px;
+  border-radius:8px;
+  pointer-events:none;
+}
+
+/* Iframe */
+iframe {
+  flex:1;
+  width:100%;
+  border:none;
+}
+
+/* Footer */
+footer {
+  text-align:center;
+  padding:6px;
+  font-size:12px;
+  background:var(--header);
+  color:#aaa;
+}
+
+/* Loading Screen */
+#loadingScreen {
+  position:fixed;
+  inset:0;
+  background:#111;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  color:#fff;
+  z-index:999;
+  font-family:'Poppins',sans-serif;
+  transition:opacity 0.5s ease;
+}
+.loader {
+  width:40px;
+  height:40px;
+  border:4px solid rgba(255,255,255,0.3);
+  border-top-color:#fff;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+@keyframes spin {
+  to { transform:rotate(360deg); }
+}
+
+/* Update Popup */
+#updatePopup {
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  background:#222;
+  color:white;
+  border-radius:12px;
+  padding:25px 30px;
+  box-shadow:0 0 30px rgba(0,0,0,0.5);
+  text-align:center;
+  display:none;
+  z-index:1000;
+  width:300px;
+}
+#updatePopup h2 {
+  margin:0 0 10px;
+}
+#updatePopup button {
+  margin-top:10px;
+  padding:8px 14px;
+  border:none;
+  border-radius:8px;
+  background:#007bff;
+  color:white;
+  cursor:pointer;
+  transition:background 0.3s ease;
+}
+#updatePopup button:hover {
+  background:#1493ff;
+}
 </style>
 </head>
 <body>
+
 <header>
-  <button id="backBtn" class="btn">←</button>
-  <button id="homeBtn" class="btn">🏠</button>
-  <input id="urlBar" readonly value="">
+  <button onclick="goHome()">🏠 Home</button>
+  <button onclick="goGames()">🎮 Games</button>
+  <input id="urlBar" readonly value="Loading...">
 </header>
-<main>
-  <iframe id="webFrame" sandbox="allow-scripts allow-forms allow-same-origin allow-modals"></iframe>
-</main>
-<footer>
-  <div id="status">● Checking…</div>
-  <div>ethan browser v1.0.1</div>
-</footer>
-<div id="loadingOverlay">
-  <div class="spinner"></div>
-  <div id="loadingText">Loading…</div>
+
+<iframe id="browserFrame"></iframe>
+
+<footer>ethan browser v1.0.1</footer>
+
+<!-- Loading screen -->
+<div id="loadingScreen">
+  <div class="loader"></div>
+  <p style="margin-top:10px;">Loading...</p>
+</div>
+
+<!-- Update modal -->
+<div id="updatePopup">
+  <h2>🔔 Browser Update</h2>
+  <p id="updateMessage"></p>
+  <button id="updateBtn" onclick="updateNow()">Update</button>
+  <button id="closeUpdateBtn" onclick="closeUpdate()">Close</button>
 </div>
 
 <script>
-const allowedDomain="https://ethanytangcodes.github.io";
-const homepage=allowedDomain+"/index.html";
-const webFrame=document.getElementById('webFrame');
-const urlBar=document.getElementById('urlBar');
-const backBtn=document.getElementById('backBtn');
-const homeBtn=document.getElementById('homeBtn');
-const loadingOverlay=document.getElementById('loadingOverlay');
-const statusEl=document.getElementById('status');
-const workerURL="https://browserupdate.ethantytang11.workers.dev/version";
-const currentVersion="1.0.1";
-const KEY_HISTORY='ethan_historyStack_v2';
-const KEY_INDEX='ethan_historyIndex_v2';
-let historyStack=[],currentIndex=-1;
+const allowedDomain = "https://ethanytangcodes.github.io";
+const homepage = allowedDomain + "/index.html";
+const gamesPage = allowedDomain + "/art";
+const version = "1.0.1";
+const updateWorker = "https://browserupdate.ethantytang11.workers.dev/version";
 
-function saveState(){localStorage.setItem(KEY_HISTORY,JSON.stringify(historyStack));localStorage.setItem(KEY_INDEX,String(currentIndex));}
-function loadState(){historyStack=JSON.parse(localStorage.getItem(KEY_HISTORY)||'[]');currentIndex=parseInt(localStorage.getItem(KEY_INDEX)||'-1',10);if(isNaN(currentIndex))currentIndex=-1;}
+const iframe = document.getElementById("browserFrame");
+const urlBar = document.getElementById("urlBar");
+const loadingScreen = document.getElementById("loadingScreen");
 
+function showLoading(){
+  loadingScreen.style.display = "flex";
+  loadingScreen.style.opacity = "1";
+}
+function hideLoading(){
+  loadingScreen.style.opacity = "0";
+  setTimeout(()=>loadingScreen.style.display="none",500);
+}
+
+// --- URL handling ---
 function sanitizeUrl(url){
-  if(!url) return homepage;
-  try{
-    const u=new URL(url,homepage);
-    if(u.origin!==new URL(allowedDomain).origin) return homepage;
-    const selfUrl=window.location.href.split('#')[0].split('?')[0];
-    if(u.href===selfUrl) return homepage;
-    return u.href;
-  }catch(e){return homepage;}
-}
-
-function displayUrl(url){
-  if(url===homepage){urlBar.value='ethan://home';}
-  else{urlBar.value='';}
-}
-
-function showLoading(){loadingOverlay.classList.add('active');}
-function hideLoading(){loadingOverlay.classList.remove('active');}
-
-function loadIframe(url,push=false){
-  const clean=sanitizeUrl(url);
-  showLoading();
-  webFrame.src=clean;
-  displayUrl(clean);
-  localStorage.setItem('ethan_lastSite',clean);
-  if(push){pushAndLoad(clean);}
-}
-
-function pushAndLoad(url){
-  const clean=sanitizeUrl(url);
-  const current=historyStack[currentIndex]||null;
-  if(clean===current){loadIframe(clean,false);return;}
-  if(currentIndex<historyStack.length-1){historyStack=historyStack.slice(0,currentIndex+1);}
-  historyStack.push(clean);
-  currentIndex=historyStack.length-1;
-  saveState();
-  loadIframe(clean,false);
-}
-
-backBtn.addEventListener('click',()=>{
-  if(currentIndex>0){
-    currentIndex=Math.max(0,currentIndex-1);
-    saveState();
-    loadIframe(historyStack[currentIndex],false);
+  try {
+    const u = new URL(url, homepage);
+    if(u.origin === new URL(allowedDomain).origin) return u.href;
+    return homepage;
+  } catch {
+    return homepage;
   }
-});
-
-homeBtn.addEventListener('click',()=>{pushAndLoad(homepage);});
-
-webFrame.addEventListener('load',()=>{setTimeout(()=>hideLoading(),150);});
-
-// Initialize
-loadState();
-if(currentIndex>=0 && historyStack[currentIndex]){loadIframe(historyStack[currentIndex],false);}
-else{historyStack=[];currentIndex=-1;pushAndLoad(homepage);}
-
-// online/offline
-function updateOnlineStatus(){statusEl.textContent=navigator.onLine?'● Online':'● Offline';statusEl.style.color=navigator.onLine?'#7fffb0':'#ff7b7b';}
-window.addEventListener('online',updateOnlineStatus);
-window.addEventListener('offline',updateOnlineStatus);
-updateOnlineStatus();
-
-// browser-style update notification
-async function checkForUpdates(){
-  try{
-    const res=await fetch(workerURL,{headers:{'Content-Type':'application/json'}});
-    if(!res.ok) return;
-    const data=await res.json();
-    const remote=String(data.version||"0.0.0");
-    const parseV=v=>v.split('.').map(n=>parseInt(n||0));
-    const a=parseV(currentVersion),b=parseV(remote);
-    const diff=(b[0]-a[0])*100+(b[1]-a[1])*10+(b[2]-a[2]||0);
-    if(diff>0 && Notification.permission!=="denied"){
-      if(Notification.permission==="default") await Notification.requestPermission();
-      if(Notification.permission==="granted"){
-        new Notification("Ethan Browser Update",{body:diff>=20?"This version is no longer supported 😢":data.message||("New version "+remote),icon:allowedDomain+"/icon.png"});
-      }
-    }
-  }catch(e){console.warn('update check failed',e);}
 }
-checkForUpdates();
-setInterval(checkForUpdates,10*60*1000);
+
+function displayUrlForUI(url){
+  if(url === homepage) urlBar.value = "ethan://home";
+  else urlBar.value = new URL(url).pathname;
+}
+
+function loadPage(url){
+  const clean = sanitizeUrl(url);
+  showLoading();
+  iframe.src = clean;
+  displayUrlForUI(clean);
+  localStorage.setItem("ethan_lastPage", clean);
+}
+
+// --- Buttons ---
+function goHome(){ loadPage(homepage); }
+function goGames(){ loadPage(gamesPage); }
+
+// --- On load ---
+let lastSite = localStorage.getItem("ethan_lastPage");
+if(!lastSite || !lastSite.startsWith(allowedDomain)) lastSite = homepage;
+loadPage(lastSite);
+
+// Hide loading when iframe loads
+iframe.addEventListener("load", hideLoading);
+
+// --- Update Modal ---
+async function checkUpdate(){
+  try {
+    const res = await fetch(updateWorker);
+    if(!res.ok) return;
+    const data = await res.json();
+    const diff = compareVersions(version, data.version);
+    const modal = document.getElementById("updatePopup");
+    const msg = document.getElementById("updateMessage");
+    const closeBtn = document.getElementById("closeUpdateBtn");
+    if(diff >= 20){
+      msg.innerText = "This version is outdated and must be updated.";
+      closeBtn.style.display = "none";
+      modal.style.display = "block";
+    } else if(diff > 0){
+      msg.innerText = data.message || "A new version is available!";
+      closeBtn.style.display = "inline-block";
+      modal.style.display = "block";
+    }
+  } catch (err) {
+    console.error("Update check failed", err);
+  }
+}
+
+function compareVersions(v1, v2){
+  const a = v1.split(".").map(Number);
+  const b = v2.split(".").map(Number);
+  return (b[0]-a[0])*100 + (b[1]-a[1])*10 + (b[2]-a[2]);
+}
+
+function updateNow(){
+  window.location.href = allowedDomain + "/download";
+}
+function closeUpdate(){
+  document.getElementById("updatePopup").style.display = "none";
+}
+
+checkUpdate();
 </script>
+
 </body>
 </html>
